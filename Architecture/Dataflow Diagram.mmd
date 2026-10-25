@@ -1,0 +1,28 @@
+sequenceDiagram
+    actor User
+    participant UI as Web UI
+    participant API as Backend Server
+    participant DB as Database
+    participant Poller as Python Pollers
+    participant External as External Data APIs
+
+    Note over Poller,External: Background content collection
+    Poller->>External: Request latest news, sports, and stock data
+    External-->>Poller: Return source information
+    Poller->>DB: Store collected content
+
+    Note over User,DB: User opens the application
+    User->>UI: Open daily highlights
+    UI->>API: Request personalized stories
+    API->>DB: Retrieve user preferences
+    DB-->>API: Return selected categories and order
+    API->>DB: Retrieve relevant content
+    DB-->>API: Return available stories
+    API->>API: Filter and order stories by preferences
+    API-->>UI: Return personalized story sequence
+    UI-->>User: Display first story
+
+    loop Until the user finishes browsing
+        User->>UI: Swipe to next story
+        UI-->>User: Display next story
+    end

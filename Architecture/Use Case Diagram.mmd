@@ -1,0 +1,27 @@
+flowchart LR
+    User(["User"])
+
+    subgraph App["Personalized Daily Highlights Application"]
+        View["View Daily Highlights"]
+        Swipe["Swipe Between Stories"]
+        News["View News Highlights"]
+        Sports["View Sports Scores"]
+        Stocks["View Stock Information"]
+        Customize["Customize Content Categories"]
+        Reorder["Reorder Story Categories"]
+        Refresh["Refresh Content"]
+        Save["Save Preferences"]
+    end
+
+    User --- View
+    User --- Swipe
+    User --- News
+    User --- Sports
+    User --- Stocks
+    User --- Customize
+    User --- Reorder
+    User --- Refresh
+
+    Customize --> Save
+    Reorder --> Save
+    View --> Swipe
