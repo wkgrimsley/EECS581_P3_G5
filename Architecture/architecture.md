@@ -23,8 +23,6 @@ A social media/productivity application designed for organizing and tracking dai
 
 ## Architecture Description
 
-## Architecture Description
-
 Morning Snapshot is a personalizable daily information application created to give users quick and convenient ways to stay informed about events around the wrold that are important to them. This application will show content in a highly interactive, swipable format inspired by Instagram Stories or Spotify Wrapped, allowing users to quickly switch through their highlights without needing to track down countless different websites or applications to do so. The content could be anything from news reports, sporting game scores, stock information, or anything else that the user could want. The whole point of this is to create an interactive and highly modular application for peoplpe to get all the information they need as soon as they wake up.
 
 At first, this will be implemented using a web server application to give a straightforward first implementation to ensure the functionality itself works. This will help with testing and further development before it moves to a more adaptable application. The architecture will be split into a couple of parts, namely the UI, backend, data collection, and data storage (potentially). This separated construction will allow separate parts to be adapted and improved upon without breaking the infrastructure as a whole.
