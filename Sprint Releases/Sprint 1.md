@@ -32,7 +32,7 @@ Create a poller (likely Python) that will pull information from a selected news 
 
 **Story Points:** 5
 
-**Assigned To:** [Team member name(s)]
+**Assigned To:** Bill Grimsley
 
 **Completion Criteria:**
 - Information is received from the poller
@@ -91,7 +91,7 @@ Implement mechanics to swipe (or at least switch in some way) between sources of
 | Story | Story Points | Assigned To | Status |
 |---|---:|---|---|
 | Story 1 | 8 | [Name(s)] | Not Started |
-| Story 2 | 5 | [Name(s)] | Not Started |
+| Story 2 | 5 | Bill Grimsley | In Progress |
 | Story 3 | 5 | [Name(s)] | Not Started |
 | Story 4 | 8 | [Name(s)] | Not Started |
 | Story 5 | 3 | [Name(s)] | Not Started |
