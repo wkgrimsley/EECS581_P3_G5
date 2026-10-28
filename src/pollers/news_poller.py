@@ -19,6 +19,7 @@ python -m pipenv install
 python -m pipenv shell
 python news_poller.py
 '''
+import argparse
 import os
 import requests
 import json
@@ -48,13 +49,8 @@ def create_retry_session(retries=3, backoff_factor=0.3, status_forcelist=(500, 5
     session.mount('https://', adapter)
     return session
 
-def pull_news_keyword():
-    """
-    Pulls news data from the News API based on user preferences.
-    Returns a JSON payload of the news articles based on a keyword
-    """
-    # Example keywords, in practice these would come from user preferences
-    keywords = ["technology", "science", "health"]
+def pull_news_keyword(keywords):
+    """Pull news articles matching the supplied keywords."""
     all_articles = []
 
     session = create_retry_session()
@@ -72,13 +68,8 @@ def pull_news_keyword():
 
     return json.dumps(all_articles)  # Return the articles as a JSON string
 
-def pull_news_source():
-    '''
-    Pulls news data from a given source for user based on preferences
-    Returns JSON payload of top articles from the source
-    '''
-    # Example sources, in practice these would come from user preferences
-    sources = ["bbc-news", "cnn", "the-verge"]
+def pull_news_source(sources):
+    """Pull top headlines from the supplied NewsAPI sources."""
     all_articles = []
 
     session = create_retry_session()
@@ -96,19 +87,38 @@ def pull_news_source():
 
     return json.dumps(all_articles)  # Return the articles as a JSON string
 
+def parse_arguments():
+    parser = argparse.ArgumentParser(description="Poll news by keyword and source")
+    parser.add_argument(
+        "--keyword",
+        action="append",
+        default=[],
+        help="News keyword to search for; may be provided multiple times",
+    )
+    parser.add_argument(
+        "--source",
+        action="append",
+        default=[],
+        help="NewsAPI source ID; may be provided multiple times",
+    )
+    return parser.parse_args()
+
+
 def main():
-    """
-    Main function to pull news data based on user preferences and print the results.
-    """
-    logging.basicConfig(level=logging.INFO)
-    logging.info("Starting news poller...")
+    args = parse_arguments()
+    logging.basicConfig(level=logging.WARNING)
 
-    # Pull news by keyword
-    # keywords = [] #input from front end
-    keyword_news = pull_news_keyword()
-    logging.info(f"Pulled {len(json.loads(keyword_news))} articles based on keywords.")
+    if not args.keyword and not args.source:
+        raise SystemExit("Provide at least one --keyword or --source argument")
 
-    # Pull news by source
-    # sources = [] #input from front end
-    source_news = pull_news_source()
-    logging.info(f"Pulled {len(json.loads(source_news))} articles based on sources.")
+    keyword_news = json.loads(pull_news_keyword(args.keyword))
+    source_news = json.loads(pull_news_source(args.source))
+
+    print(json.dumps({
+        "keywords": keyword_news,
+        "sources": source_news,
+    }))
+
+
+if __name__ == "__main__":
+    main()
