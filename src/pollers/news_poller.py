@@ -30,7 +30,7 @@ CURR_DATE = time.strftime("%Y-%m-%d")  # Get the current date in YYYY-MM-DD form
 YESTERDAY_DATE = time.strftime("%Y-%m-%d", time.localtime(time.time() - 86400))  # Get yesterday's date
 LAST_WEEK_DATE = time.strftime("%Y-%m-%d", time.localtime(time.time() - 604800))  # Get the date a week ago
 API_URL = "https://newsapi.org/v2"
-API_KEY = os.getenv('NEWS_API_KEY')  # Get the API key from environment variable
+API_KEY = os.getenv("NEWS_API_KEY")  # Get the API key from environment variable
 
 def create_retry_session(retries=3, backoff_factor=0.3, status_forcelist=(500, 502, 504)):
     '''
@@ -56,12 +56,12 @@ def pull_news_keyword(keywords):
     session = create_retry_session()
 
     for keyword in keywords:
-        url = f"{API_URL}/everything?q={keyword}&from={LAST_WEEK_DATE}&to={CURR_DATE}&sortBy=popularity&apiKey={API_KEY}"
+        url = f"{API_URL}/everything?q={keyword}&sortBy=publishedAt&pageSize=3&apiKey={API_KEY}"
         try:
             response = session.get(url)
             response.raise_for_status()  # Raise an error for bad responses
             data = response.json()
-            articles = data.get('articles', [])
+            articles = data.get('articles', [])[:3]
             all_articles.extend(articles)
         except requests.exceptions.RequestException as e:
             logging.error(f"Error fetching news for keyword '{keyword}': {e}")
@@ -75,12 +75,12 @@ def pull_news_source(sources):
     session = create_retry_session()
 
     for source in sources:
-        url = f"{API_URL}/top-headlines?sources={source}&apiKey={API_KEY}"
+        url = f"{API_URL}/top-headlines?sources={source}&pageSize=3&apiKey={API_KEY}"
         try:
             response = session.get(url)
             response.raise_for_status()  # Raise an error for bad responses
             data = response.json()
-            articles = data.get('articles', [])
+            articles = data.get('articles', [])[:3]
             all_articles.extend(articles)
         except requests.exceptions.RequestException as e:
             logging.error(f"Error fetching news for source '{source}': {e}")
@@ -113,11 +113,15 @@ def main():
 
     keyword_news = json.loads(pull_news_keyword(args.keyword))
     source_news = json.loads(pull_news_source(args.source))
-
-    print(json.dumps({
+    output = {
         "keywords": keyword_news,
         "sources": source_news,
-    }))
+    }
+
+    with open("news_output.json", "w") as output_file:
+        json.dump(output, output_file, indent=4)
+
+    print(json.dumps(output))
 
 
 if __name__ == "__main__":
