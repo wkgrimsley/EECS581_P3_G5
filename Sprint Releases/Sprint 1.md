@@ -14,9 +14,9 @@
 **Description:**  
 Create the initial UI to combine information from different places into one consolidated format. 
 
-**Story Points:** 6
+**Story Points:** 8
 
-**Assigned To:** [Team member name(s)]
+**Assigned To:** Felix Balandran, Riley Backus
 
 **Completion Criteria:**
 - UI is loadable on a locally hosted site
@@ -25,12 +25,26 @@ Create the initial UI to combine information from different places into one cons
 
 ---
 
-## Story 2: Create News Data Poller
+## Story 2: Create Preferences Page
+
+**Description:**  
+Add preferences page to UI for user to select their preferences on what they view
+
+**Story Points:** 3
+
+**Assigned To:** Jamareon Davis
+
+**Completion Criteria:**
+- Preferences are receieved and polled using backend
+
+---
+
+## Story 3: Create News Data Poller
 
 **Description:**  
 Create a poller (likely Python) that will pull information from a selected news source (any will work)
 
-**Story Points:** 5
+**Story Points:** 3
 
 **Assigned To:** Bill Grimsley
 
@@ -40,14 +54,14 @@ Create a poller (likely Python) that will pull information from a selected news 
 
 ---
 
-## Story 3: Create Stocks Data Poller
+## Story 4: Create Stocks Data Poller
 
 **Description:**  
 Create a poller (likely Python) that will pull information from stock sites about selected stocks (any will do)
 
-**Story Points:** 5
+**Story Points:** 3
 
-**Assigned To:** [Team member name(s)]
+**Assigned To:** John Vitha
 
 **Completion Criteria:**
 - Information is received from the poller
@@ -55,14 +69,14 @@ Create a poller (likely Python) that will pull information from stock sites abou
 
 ---
 
-## Story 4: Create Backend for communicating between Pollers and UI
+## Story 5: Create Backend for communicating between Pollers and UI
 
 **Description:**  
 Implement a backend that activates the pollers to grab the information and then sends that information to be viewed using the Frontend
 
-**Story Points:** 8
+**Story Points:** 5
 
-**Assigned To:** [Team member name(s)]
+**Assigned To:** Bill Grimsley
 
 **Completion Criteria:**
 - Information is received from the pollers to the backend
@@ -71,7 +85,7 @@ Implement a backend that activates the pollers to grab the information and then 
 
 ---
 
-## Story 5: Create Swipe funcionality to website
+## Story 6: Create Swipe funcionality to website
 
 **Description:**  
 Implement mechanics to swipe (or at least switch in some way) between sources of information in the UI
@@ -91,8 +105,9 @@ Implement mechanics to swipe (or at least switch in some way) between sources of
 | Story | Story Points | Assigned To | Status |
 |---|---:|---|---|
 | Story 1 | 8 | [Name(s)] | Not Started |
-| Story 2 | 5 | Bill Grimsley | In Progress |
-| Story 3 | 5 | [Name(s)] | Not Started |
-| Story 4 | 8 | [Name(s)] | Not Started |
-| Story 5 | 3 | [Name(s)] | Not Started |
-| **Total** | **29** | — | — |
+| Story 2 | 3 | [Names(s)] | Not Started |
+| Story 3 | 3 | Bill Grimsley | Completed |
+| Story 4 | 3 | [Name(s)] | Not Started |
+| Story 5 | 5 | Bill Grimsley | Completed |
+| Story 6 | 3 | [Name(s)] | Not Started |
+| **Total** | **25** | — | — |
