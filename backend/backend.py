@@ -1,10 +1,20 @@
+'''
+Backend for handling pollers
+
+Requests from frontend call REST API endpoints which then call the appropriate poller to gather data from the appropriate source
+
+Author: Bill Grimsley
+Creation Date: 2026-10-28
+'''
+
+
 import json
 import subprocess
 import sys
 from pathlib import Path
 
 from flask import Flask, jsonify, request
-
+#Create a Flask app to handle API requests and run pollers
 app = Flask(__name__)
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -13,8 +23,9 @@ POLLER_FILES = {
     "news": "news_poller.py",
 }
 
-
+#code for run_poller adapted from GitHub Copilot
 def run_poller(poller_name, preferences):
+    """Run the specified poller with the given preferences and return the result."""
     poller_file = POLLER_FILES.get(poller_name)
     if poller_file is None:
         return None, "Unknown poller", 400
@@ -45,12 +56,12 @@ def run_poller(poller_name, preferences):
     except json.JSONDecodeError:
         return None, "Poller returned invalid JSON", 500
 
-
+#get api health to check if the backend is running
 @app.get("/api/health")
 def health():
     return jsonify({"status": "ok"})
 
-
+#Poll specific poller based on the poller name and preferences provided in the request body
 @app.post("/api/poll")
 def poll():
     data = request.get_json(silent=True) or {}
@@ -65,7 +76,7 @@ def poll():
 
     return jsonify(data)
 
-
+#poll specific news data
 @app.post("/api/news")
 def news():
     data, error, status = run_poller("news", request.get_json(silent=True) or {})
@@ -74,6 +85,6 @@ def news():
 
     return jsonify(data)
 
-
+#backend runs on local host and port 5000, debug mode is enabled for development purposes
 if __name__ == "__main__":
     app.run(host="127.0.0.1", port=5000, debug=True)

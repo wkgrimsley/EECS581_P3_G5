@@ -13,11 +13,8 @@ Polls newsapi using API key and keyword(s) provided by user preferences page
 Data is then parsed and passed as a JSON payload to the backend for further processing
 Backend will then send the processed data to the front end for display to the user
 
-To run, navigate to this working directory and run:
-python -m pip install --user pipenv
-python -m pipenv install
-python -m pipenv shell
-python news_poller.py
+Author: Bill Grimsley
+Creation Date: 2026-10-28
 '''
 import argparse
 import os
@@ -26,9 +23,13 @@ import json
 import logging
 import time
 
+#Environmental Variables to be used in polling
+#these dates aren't used right now but may be used for future filtering or removed
 CURR_DATE = time.strftime("%Y-%m-%d")  # Get the current date in YYYY-MM-DD format
 YESTERDAY_DATE = time.strftime("%Y-%m-%d", time.localtime(time.time() - 86400))  # Get yesterday's date
 LAST_WEEK_DATE = time.strftime("%Y-%m-%d", time.localtime(time.time() - 604800))  # Get the date a week ago
+PAGE_SIZE = 3  # Number of articles to pull per keyword or source
+#general API URL and KEY
 API_URL = "https://newsapi.org/v2"
 API_KEY = os.getenv("NEWS_API_KEY")  # Get the API key from environment variable
 
@@ -50,18 +51,20 @@ def create_retry_session(retries=3, backoff_factor=0.3, status_forcelist=(500, 5
     return session
 
 def pull_news_keyword(keywords):
-    """Pull news articles matching the supplied keywords."""
+    """Pull news articles matching the supplied keywords.
+        Pulls top 3 articles related to each keyword and returns them as a JSON string."""
     all_articles = []
 
     session = create_retry_session()
 
+    #For each keyword, pull the news articles related
     for keyword in keywords:
-        url = f"{API_URL}/everything?q={keyword}&sortBy=publishedAt&pageSize=3&apiKey={API_KEY}"
+        url = f"{API_URL}/everything?q={keyword}&sortBy=publishedAt&pageSize={PAGE_SIZE}&apiKey={API_KEY}"
         try:
             response = session.get(url)
             response.raise_for_status()  # Raise an error for bad responses
             data = response.json()
-            articles = data.get('articles', [])[:3]
+            articles = data.get('articles', [])[:PAGE_SIZE]
             all_articles.extend(articles)
         except requests.exceptions.RequestException as e:
             logging.error(f"Error fetching news for keyword '{keyword}': {e}")
@@ -69,25 +72,28 @@ def pull_news_keyword(keywords):
     return json.dumps(all_articles)  # Return the articles as a JSON string
 
 def pull_news_source(sources):
-    """Pull top headlines from the supplied NewsAPI sources."""
+    """Pull top headlines from the supplied NewsAPI sources.
+        Pulls top 3 articles from each source and returns them as a JSON string."""
     all_articles = []
 
     session = create_retry_session()
 
     for source in sources:
-        url = f"{API_URL}/top-headlines?sources={source}&pageSize=3&apiKey={API_KEY}"
+        url = f"{API_URL}/top-headlines?sources={source}&pageSize={PAGE_SIZE}&apiKey={API_KEY}"
         try:
             response = session.get(url)
             response.raise_for_status()  # Raise an error for bad responses
             data = response.json()
-            articles = data.get('articles', [])[:3]
+            articles = data.get('articles', [])[:PAGE_SIZE]
             all_articles.extend(articles)
         except requests.exceptions.RequestException as e:
             logging.error(f"Error fetching news for source '{source}': {e}")
 
     return json.dumps(all_articles)  # Return the articles as a JSON string
 
+#code for parse_arguments and main adapted from GitHub Copilot
 def parse_arguments():
+    """Parse command-line arguments for keywords and sources."""
     parser = argparse.ArgumentParser(description="Poll news by keyword and source")
     parser.add_argument(
         "--keyword",
@@ -105,6 +111,7 @@ def parse_arguments():
 
 
 def main():
+    """Run the news poller based on command-line arguments from backend"""
     args = parse_arguments()
     logging.basicConfig(level=logging.WARNING)
 
