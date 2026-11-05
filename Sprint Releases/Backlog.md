@@ -21,24 +21,25 @@ Sprint assignments have not been specified yet. Each requirement is marked **Una
 
 | ID | Requirement | Story points | Sprint |
 |---:|---|---:|---|
-| 4 | Create sports data pollers for selected sources. | 5 | Unassigned |
-| 5 | Create a weather poller. | 3 | Unassigned |
+| 4 | Create sports data pollers for selected sources. | 5 | 2 |
+| 5 | Create a weather poller. | 3 | 2 |
 | 6 | Implement a way to switch between topics, such as swiping. | 8 | 1 |
-| 7 | Create a preferences screen for choosing and ordering the information shown. | 5 | Unassigned |
+| 7 | Create a preferences screen for choosing and ordering the information shown. | 5 | 1 |
 
 ## Priority 3
 
 | ID | Requirement | Story points | Sprint |
 |---:|---|---:|---|
-| 8 | Add notes that can be saved and shown on the home screen, either first or whenever the user chooses. | 2 | Unassigned |
-| 9 | Create a general website that brings the initial project components together as a pre-web-app proof of concept. | 8 | Unassigned |
+| 8 | Add notes that can be saved and shown on the home screen, either first or whenever the user chooses. | 2 | 2 |
+| 9 | Create a general website that brings the initial project components together as a pre-web-app proof of concept. | 3 | 2 |
+| 26 | Create config for saving user accounts | 8 | 2 |
 
 ## Priority 4
 
 | ID | Requirement | Story points | Sprint |
 |---:|---|---:|---|
 | 10 | Create a progressive web app that lets users customize what is shown based on their preferences. | 13 | Unassigned |
-| 11 | Set up daily reminders. | 2 | Unassigned |
+| 11 | Set up daily reminders. | 2 | 2 |
 
 ## Priority 5
 
