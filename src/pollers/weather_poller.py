@@ -27,10 +27,25 @@ import argparse
 
 API_KEY = os.getenv("WEATHER_API_KEY")
 
+SEARCH_URL = "https://api.weatherapi.com/v1/search.json"
 CURRENT_URL = "https://api.weatherapi.com/v1/current.json"
 FORECAST_URL = "https://api.weatherapi.com/v1/forecast.json"
 SEARCH_URL = "https://api.weatherapi.com/v1/search.json"
 ALERTS_URL = "https://api.weatherapi.com/v1/alerts.json"
+
+def search_cities(query):
+
+    params = {
+        "key" : API_KEY,
+        "q" : query
+    }
+
+    response = requests.get(CURRENT_URL, params=params, timeout=10)
+    response.raise_for_status()
+    
+    data = response.json()
+    return data
+
 
 def pull_current(city):
     ''' Pull current weather. '''
@@ -107,9 +122,15 @@ def pull_daily_summary(city):
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Get current weather for a city")
 
+    parser.add_argument("--query",
+                            type=str,
+                            required=False,
+                            help="Search for city"
+                            )
+
     parser.add_argument("--city",
                         type=str,
-                        required=True,
+                        required=False,
                         help="City to retrieve weather for"
                         )
 
@@ -117,14 +138,17 @@ def parse_arguments():
 
 def main():
     args = parse_arguments()
+    output = {}
 
-    output = {
-        "current": pull_current(args.city),
-        "air_quality": pull_air_quality(args.city),
-        "alerts": pull_alerts(args.city),
-        "hourly": pull_hourly(args.city),
-        "daily_summary": pull_daily_summary(args.city),
-    }
+    if args.query:
+        output["search"] = search_cities(args.query)
+
+    if args.city: 
+        output["current"] = pull_current(args.city)
+        output["air_quality"] = pull_air_quality(args.city)
+        output["alerts"] = pull_alerts(args.city)
+        output["hourly"] = pull_hourly(args.city)
+        output["daily_summary"] = pull_daily_summary(args.city)
 
     print(json.dumps(output, indent=4))
 
