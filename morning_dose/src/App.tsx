@@ -1,12 +1,33 @@
+import { useState } from "react";
 import Pager from "./components/Pager";
 import Welcome from "./pages/Welcome";
 import Prefrences from "./pages/prefrences.tsx";
-
-// Below is a list which contains the different pages
-// To add a page, make a new file in src/pages/, import it, add it here
-const pages = [<Welcome key="welcome" />, <Prefrences key="prefrences" />];
+import { loadEnabledModules, saveEnabledModules } from "./modules";
+import { MODULES } from "./modules";
+import { MODULE_PAGES } from "./modulePages";
 
 export default function App() {
-  // Pager is the component that controls the page swipe functionality
+  // State lives here so every page sees the same list
+  const [enabled, setEnabled] = useState<string[]>(() => loadEnabledModules());
+
+  function handleSave(ids: string[]) {
+    setEnabled(ids);
+    saveEnabledModules(ids);
+  }
+
+  // Creates the module pages
+  const modulePages = MODULES
+  .filter((m) => enabled.includes(m.id))
+  .map((m) => {
+    const Page = MODULE_PAGES[m.id];
+    return <Page key={m.id} />;
+  });
+
+  // Pages are built inside the component now, so they can receive props
+  const pages = [
+    <Welcome key="welcome" enabled={enabled} />, ...modulePages,
+    <Prefrences key="prefrences" enabled={enabled} onSave={handleSave} />,
+  ];
+
   return <Pager pages={pages} />;
 }
