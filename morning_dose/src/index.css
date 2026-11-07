@@ -4,17 +4,25 @@
    Everything visual is driven by the CSS variables ("tokens") below.
    Change a value here and every component that uses it updates.
    Use them in any CSS file like:  color: var(--color-text);
+
+   Look: dark and minimal, in the spirit of iOS. No accent color —
+   white is used for primary actions, and color is reserved for meaning
+   (green/red for gains and losses, green for switches that are on).
    ========================================================================== */
 
 :root {
-  /* --- Colors (light mode) --- */
-  --color-bg: #faf8f5; /* page background, a warm off-white */
-  --color-surface: #ffffff; /* cards, panels */
-  --color-text: #1c1b1a; /* main text */
-  --color-text-muted: #6b6762; /* secondary text, descriptions */
-  --color-border: #e8e4de; /* subtle dividers and outlines */
-  --color-accent: #f08a24; /* "morning sun" orange, for highlights */
-  --color-accent-text: #ffffff; /* text that sits on top of the accent */
+  /* --- Colors (the app is always dark) --- */
+  --color-bg: #000000; /* page background */
+  --color-surface: #1c1c1e; /* cards, grouped lists */
+  --color-surface-raised: #2c2c2e; /* menus, secondary buttons, placeholders */
+  --color-text: #f5f5f7; /* main text */
+  --color-text-muted: #8e8e93; /* secondary text, descriptions */
+  --color-text-faint: #636366; /* placeholders */
+  --color-border: #38383a; /* hairline dividers */
+  --color-accent: #f5f5f7; /* primary buttons are white */
+  --color-accent-text: #000000; /* text that sits on top of the accent */
+  --color-positive: #34c759; /* gains, switches that are on */
+  --color-negative: #ff453a; /* losses, live games, destructive actions */
 
   /* --- Spacing scale: use these instead of random pixel values --- */
   --space-1: 0.25rem;
@@ -24,32 +32,22 @@
   --space-5: 2.5rem;
 
   /* --- Shape & depth --- */
-  --radius: 14px;
-  --shadow: 0 1px 3px rgb(0 0 0 / 0.06), 0 4px 12px rgb(0 0 0 / 0.04);
+  --radius: 12px; /* grouped lists, menus */
+  --radius-card: 20px; /* story cards */
+  --radius-control: 8px; /* buttons, images */
+  --shadow: none; /* surfaces are separated by color, not shadow */
 
   /* --- Typography --- */
-  --font-body: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --text-sm: 0.875rem;
-  --text-md: 1rem;
-  --text-lg: 1.25rem;
-  --text-xl: 2rem;
+  --font-body: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI Variable Text", "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  --text-sm: 0.8125rem; /* 13px */
+  --text-md: 1.0625rem; /* 17px, iOS body size */
+  --text-lg: 1.25rem; /* 20px */
+  --text-xl: 2.125rem; /* 34px, iOS large title */
 
   /* --- Motion --- */
   --transition: 150ms ease;
-}
 
-/* Dark mode: only the colors change. Everything else stays the same.
-   This follows the user's operating-system setting automatically. */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-bg: #141312;
-    --color-surface: #1e1d1b;
-    --color-text: #f2efea;
-    --color-text-muted: #a19c95;
-    --color-border: #2e2c29;
-    --color-accent: #ff9d3c;
-    --color-accent-text: #1c1b1a;
-  }
+  color-scheme: dark;
 }
 
 /* ==========================================================================
@@ -72,8 +70,17 @@ body {
   color: var(--color-text);
   font-family: var(--font-body);
   font-size: var(--text-md);
-  line-height: 1.5;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
   -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* The home screen doesn't scroll; thrown cards fly past the edges without scrollbars */
+html.lock,
+html.lock body {
+  overflow: hidden;
+  overscroll-behavior: none;
 }
 
 h1,
@@ -83,8 +90,51 @@ h3 {
   line-height: 1.2;
 }
 
+h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+h3 {
+  font-size: var(--text-md);
+  font-weight: 600;
+}
+
 p {
   margin: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  background: none;
+  border: 0;
+  padding: 0;
+}
+
+input {
+  font: inherit;
+  color: var(--color-text);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-text);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
 }
 
 /* ==========================================================================
@@ -104,16 +154,33 @@ p {
 .page-title {
   font-size: var(--text-xl);
   font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
 .muted {
   color: var(--color-text-muted);
 }
 
+.small {
+  font-size: var(--text-sm);
+}
+
+/* Numbers line up in columns */
+.num {
+  font-variant-numeric: tabular-nums;
+}
+
+.positive {
+  color: var(--color-positive);
+}
+
+.negative {
+  color: var(--color-negative);
+}
+
 /* A raised box for grouping content. */
 .card {
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   padding: var(--space-3);
@@ -122,10 +189,11 @@ p {
 /* Primary button. */
 .button {
   font: inherit;
+  font-size: 0.9375rem;
   font-weight: 600;
-  padding: var(--space-2) var(--space-4);
+  padding: 11px 20px;
   border: none;
-  border-radius: 999px; /* pill shape */
+  border-radius: var(--radius-control);
   background: var(--color-accent);
   color: var(--color-accent-text);
   cursor: pointer;
@@ -138,4 +206,62 @@ p {
 
 .button:active {
   transform: scale(0.97);
+}
+
+/* Secondary (gray) button. */
+.button.secondary {
+  background: var(--color-surface-raised);
+  color: var(--color-text);
+  font-weight: 500;
+}
+
+/* Text-only button, e.g. "Done" in a header. */
+.text-button {
+  font-weight: 600;
+  padding: 6px 4px;
+}
+
+/* ==========================================================================
+   App shell: header + one screen below it
+   ========================================================================== */
+
+.app {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100%;
+  padding: max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+}
+
+.app.home {
+  height: 100%;
+}
+
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 8px 4px 16px;
+}
+
+.app-header .date {
+  color: var(--color-text-muted);
+  font-size: 0.9375rem;
+  margin-top: 2px;
+}
+
+/* Round icon button in the header (the ⋯ menu and the × on Preferences) */
+.round-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--color-surface);
+  display: grid;
+  place-items: center;
+  margin-bottom: 4px;
+}
+
+.round-btn svg {
+  display: block;
 }

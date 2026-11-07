@@ -1,0 +1,65 @@
+/* Content inside each story card (Weather, News, Stocks, Sports pages).
+   Colors come from the theme in index.css. */
+
+/* ---------- Weather ---------- */
+.weather-location { color: var(--color-text-muted); font-size: 17px; }
+.weather-temp {
+  font-size: 104px; font-weight: 200; letter-spacing: -0.05em; line-height: 1;
+  margin: 12px 0 6px -4px;
+}
+.weather-summary { font-size: 20px; font-weight: 500; }
+.weather-range { color: var(--color-text-muted); margin-top: 2px; }
+.hourly {
+  list-style: none; margin: 32px 0 0; padding: 16px 0 0;
+  border-top: 0.5px solid var(--color-border);
+  display: flex; justify-content: space-between; text-align: center;
+}
+.hourly li { display: flex; flex-direction: column; gap: 6px; font-size: 15px; }
+.hourly .muted { font-size: 13px; }
+
+/* ---------- Lists (news, stocks, sports) ---------- */
+.rows { list-style: none; margin: 0; padding: 0; }
+.rows > li { padding: 14px 0; border-top: 0.5px solid var(--color-border); }
+.rows > li:first-child { border-top: 0; padding-top: 0; }
+
+.meta { display: flex; justify-content: space-between; gap: 12px; color: var(--color-text-muted); font-size: 13px; margin-top: 4px; }
+
+.news-lead { display: block; padding-bottom: 14px; }
+.news .rows > li:first-child { border-top: 0.5px solid var(--color-border); padding-top: 14px; }
+.news-lead img {
+  width: 100%; aspect-ratio: 16 / 9; object-fit: cover;
+  border-radius: var(--radius-control); background: var(--color-surface-raised);
+  margin-bottom: 14px;
+}
+.news-lead h3 { font-size: 20px; line-height: 1.25; letter-spacing: -0.015em; }
+.news-lead p.summary {
+  color: var(--color-text-muted); font-size: 15px; margin-top: 6px;
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+}
+.news-item h3 { font-weight: 500; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.news a:hover h3 { text-decoration: underline; text-underline-offset: 3px; }
+
+.quote { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.quote .symbol { font-weight: 600; }
+.quote .name { color: var(--color-text-muted); font-size: 13px; }
+.quote .price { text-align: right; }
+.change {
+  display: inline-block; min-width: 76px; text-align: right;
+  padding: 3px 8px; border-radius: 6px; font-size: 15px; font-weight: 500;
+  color: #fff; margin-top: 4px;
+}
+.change.positive { background: var(--color-positive); }
+.change.negative { background: var(--color-negative); }
+
+.game .team { display: flex; justify-content: space-between; font-size: 17px; }
+.game .team + .team { margin-top: 2px; }
+.game .status { color: var(--color-text-muted); font-size: 13px; margin-bottom: 6px; display: flex; justify-content: space-between; }
+.game .status .live { color: var(--color-negative); font-weight: 600; }
+.game .winner { font-weight: 600; }
+.game .loser { color: var(--color-text-muted); }
+
+/* ---------- Calendar ---------- */
+.event { display: flex; gap: 16px; align-items: baseline; }
+.event-time { flex: none; width: 76px; font-size: 15px; display: flex; flex-direction: column; gap: 2px; }
+.event-title { display: block; }
+.event-location { display: block; margin-top: 2px; }

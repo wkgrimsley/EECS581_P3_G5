@@ -1,19 +1,38 @@
-import { MODULES } from "../modules";
+// Content of the Calendar card. Data arrives already converted by src/api/calendar.ts;
+// the card title and description come from modules.ts (see StoryCard.tsx).
+import type { CalendarEvent } from '../types'
+import { clockTime } from '../utils/format'
 
-// Look up this page's entry by its id. Name, icon and description now come
-// from modules.ts, so editing them there updates this page too.
-const info = MODULES.find((m) => m.id === "calendar")!;
-
-export default function CalendarPage() {
+// Start time on top, end time underneath (like the iOS Calendar list)
+function Time({ e }: { e: CalendarEvent }) {
+  if (e.allDay) return <span className="event-time">All day</span>
   return (
-    <div className="page">
-      <h1 className="page-title">
-        {info.icon} {info.name}
-      </h1>
-      <p className="muted">{info.description}</p>
-      <div className="card">
-        <p className="muted">Loading…</p>
+    <span className="event-time num">
+      <span>{clockTime(e.start)}</span>
+      {e.end && <span className="muted">{clockTime(e.end)}</span>}
+    </span>
+  )
+}
+
+export default function CalendarPage({ data }: { data: CalendarEvent[] }) {
+  if (data.length === 0) {
+    return (
+      <div className="story-message">
+        <h3>Nothing scheduled today</h3>
       </div>
-    </div>
-  );
+    )
+  }
+  return (
+    <ul className="rows">
+      {data.map((e) => (
+        <li key={e.id} className="event">
+          <Time e={e} />
+          <span>
+            <span className="event-title">{e.title}</span>
+            {e.location && <span className="muted small event-location">{e.location}</span>}
+          </span>
+        </li>
+      ))}
+    </ul>
+  )
 }

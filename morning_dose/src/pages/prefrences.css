@@ -1,49 +1,110 @@
 /* Styles that only the preferences page uses.
-   Colors/spacing all come from the theme variables in index.css. */
+   Colors/spacing all come from the theme variables in index.css.
+   Same look as the story cards: dark surfaces, white for "on", no platform-specific widgets. */
 
-.module-list {
+.prefs {
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+  padding: 8px 4px 0;
+}
+
+/* ---- Sections ---- */
+.pref-title {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.pref-hint {
+  color: var(--color-text-muted);
+  font-size: 0.9375rem;
+  margin: 4px 0 14px;
+  max-width: 40ch;
+}
+
+.pref-subtitle {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  margin: 20px 0 10px;
+}
+
+/* ---- Topic list ---- */
+.topic-list {
   list-style: none;
   margin: 0;
   padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
+  background: var(--color-surface);
+  border-radius: 16px;
+  overflow: hidden;
 }
 
-.module-row {
+.topic-row {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
-  cursor: pointer;
-  transition: border-color var(--transition);
+  gap: 12px;
+  padding: 14px 16px;
 }
 
-/* Highlight the border when a module is on */
-.module-row.is-on {
-  border-color: var(--color-accent);
+.topic-row + .topic-row {
+  border-top: 1px solid var(--color-border);
 }
 
-.module-icon {
-  font-size: var(--text-lg);
+.topic-order {
+  width: 18px;
+  color: var(--color-text-faint);
+  font-size: 0.9375rem;
+  font-variant-numeric: tabular-nums;
 }
 
-.module-text {
-  flex: 1; /* take up the remaining space, pushing the switch to the right */
+.topic-text {
+  flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
+  gap: 2px;
 }
 
-.module-name {
-  font-weight: 600;
+.topic-name {
+  font-weight: 500;
 }
 
-.module-desc {
+.topic-desc {
+  color: var(--color-text-muted);
   font-size: var(--text-sm);
 }
 
+.topic-row.off .topic-name,
+.topic-row.off .topic-order {
+  color: var(--color-text-muted);
+}
+
+.topic-move {
+  display: flex;
+}
+
+.icon-btn {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-control);
+  color: var(--color-text-muted);
+}
+
+.icon-btn:hover:not(:disabled) {
+  background: var(--color-surface-raised);
+  color: var(--color-text);
+}
+
+.icon-btn:disabled {
+  opacity: 0.25;
+  cursor: default;
+}
+
 /* ---- Toggle switch ----
-   This is a normal checkbox with its default look removed (appearance: none),
-   then redrawn as a pill. The ::before pseudo-element is the sliding knob. */
+   A normal checkbox with its default look removed (appearance: none), then redrawn.
+   Off = dark track; on = white track with a dark knob. */
 .switch {
   appearance: none;
   position: relative;
@@ -51,8 +112,8 @@
   width: 44px;
   height: 26px;
   margin: 0;
-  border-radius: 999px;
-  background: var(--color-border);
+  border-radius: 13px;
+  background: var(--color-surface-raised);
   cursor: pointer;
   transition: background var(--transition);
 }
@@ -65,27 +126,150 @@
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: white;
-  box-shadow: 0 1px 2px rgb(0 0 0 / 0.2);
-  transition: transform var(--transition);
+  background: var(--color-text-muted);
+  transition: transform var(--transition), background var(--transition);
 }
 
 .switch:checked {
-  background: var(--color-accent);
+  background: var(--color-text);
 }
 
 .switch:checked::before {
   transform: translateX(18px);
+  background: var(--color-bg);
 }
 
 /* Visible outline for keyboard users */
 .switch:focus-visible {
-  outline: 2px solid var(--color-accent);
+  outline: 2px solid var(--color-text);
   outline-offset: 2px;
 }
 
+/* ---- Text fields ---- */
+.field {
+  width: 100%;
+  background: var(--color-surface);
+  border: 1px solid transparent;
+  border-radius: 12px;
+  padding: 12px 14px;
+  outline: none;
+  transition: border-color var(--transition);
+}
+
+.field:focus,
+.field:focus-within {
+  border-color: var(--color-text-muted);
+}
+
+.field::placeholder,
+.field input::placeholder {
+  color: var(--color-text-faint);
+}
+
+/* Keywords: removable tags plus an input, all in one field */
+.tag-field {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+}
+
+.tag-field input {
+  flex: 1;
+  min-width: 120px;
+  background: none;
+  border: 0;
+  outline: none;
+  padding: 6px 4px;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--color-surface-raised);
+  border-radius: 6px;
+  padding: 5px 6px 5px 10px;
+  font-size: 0.9375rem;
+}
+
+.tag button {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  color: var(--color-text-muted);
+}
+
+.tag button:hover {
+  color: var(--color-text);
+}
+
+/* ---- Tile grid (sources, stocks, leagues) ---- */
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 8px;
+}
+
+.tile {
+  height: 44px;
+  padding: 0 10px;
+  border-radius: 10px;
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  transition: background var(--transition), color var(--transition), border-color var(--transition);
+}
+
+.tile:hover {
+  border-color: var(--color-text-muted);
+}
+
+.tile.on {
+  background: var(--color-text);
+  border-color: var(--color-text);
+  color: var(--color-bg);
+}
+
+/* ---- Bottom of page ---- */
+.reset-btn {
+  align-self: flex-start;
+  color: var(--color-text-muted);
+  font-size: 0.9375rem;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  margin-top: -12px;
+}
+
+.reset-btn:hover {
+  color: var(--color-text);
+}
+
+/* Save bar stays at the bottom of the screen while scrolling */
 .prefs-footer {
+  position: sticky;
+  bottom: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 12px;
+  margin: 0 -20px;
+  padding: 12px 20px max(12px, env(safe-area-inset-bottom));
+  background: var(--color-bg);
+  border-top: 1px solid var(--color-border);
+}
+
+.prefs-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.prefs-footer .button:disabled {
+  opacity: 0.35;
+  cursor: default;
+  transform: none;
 }
