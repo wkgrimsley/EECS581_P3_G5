@@ -1,19 +1,35 @@
-import { MODULES } from "../modules";
+// Content of the Stocks card. Data arrives already converted by src/api/stocks.ts;
+// the card title and description come from modules.ts (see StoryCard.tsx).
+import type { StockQuote } from '../types'
 
-// Look up this page's entry by its id. Name, icon and description now come
-// from modules.ts, so editing them there updates this page too.
-const info = MODULES.find((m) => m.id === "stocks")!;
-
-export default function StocksPage() {
-  return (
-    <div className="page">
-      <h1 className="page-title">
-        {info.icon} {info.name}
-      </h1>
-      <p className="muted">{info.description}</p>
-      <div className="card">
-        <p className="muted">Loading…</p>
+export default function StocksPage({ data }: { data: StockQuote[] }) {
+  if (data.length === 0) {
+    return (
+      <div className="story-message">
+        <h3>No stocks selected</h3>
+        <p className="muted small">Choose stocks to follow in Preferences.</p>
       </div>
-    </div>
-  );
+    )
+  }
+  return (
+    <ul className="rows">
+      {data.map((q) => {
+        const up = q.change >= 0
+        return (
+          <li key={q.symbol} className="quote">
+            <div>
+              <div className="symbol">{q.symbol}</div>
+              <div className="name">{q.name}</div>
+            </div>
+            <div className="price num">
+              <div>{q.price.toFixed(2)}</div>
+              <span className={`change num ${up ? 'positive' : 'negative'}`}>
+                {up ? '+' : '−'}{Math.abs(q.changePct).toFixed(2)}%
+              </span>
+            </div>
+          </li>
+        )
+      })}
+    </ul>
+  )
 }
