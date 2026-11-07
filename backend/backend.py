@@ -18,7 +18,7 @@ from flask import Flask, jsonify, request
 app = Flask(__name__)
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-POLLER_DIRECTORY = PROJECT_ROOT / "pollers"
+POLLER_DIRECTORY = Path(__file__).resolve().parent / "pollers"  # pollers live in backend/pollers
 POLLER_FILES = {
     "news": "news_poller.py",
 }
