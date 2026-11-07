@@ -2,7 +2,8 @@
 Swipeable story deck (Sprint 1 Story 6 / backlog #6).
 
 Topics are a stack of cards. Swipe the top card away in ANY direction to
-reveal the next topic; it flies off the way you threw it.
+reveal the next topic; it flies off the way you threw it. Works with touch,
+click-and-drag, and two-finger swipes on a laptop trackpad (or a mouse wheel).
 Go back by tapping a segment in the progress bar or pressing the left arrow key.
 
 Author: Jamareon Davis
@@ -18,6 +19,8 @@ import './StoryDeck.css'
 const SWIPE_DISTANCE = 0.28 // fraction of the card's shorter side
 const FLICK_VELOCITY = 0.55 // px per ms — a quick flick also counts
 const STACK_DEPTH = 2 // cards visible underneath the top one
+const WHEEL_DISTANCE = 80 // px of trackpad/mouse-wheel scrolling that throws a card
+const WHEEL_SETTLE_MS = 150 // trackpad momentum: wait for this gap before accepting another throw
 
 type Point = { x: number; y: number }
 type Exit = Point & { rotate: number }
@@ -129,20 +132,65 @@ export function StoryDeck({ topics, prefs, onOpenPreferences }: Props) {
     setDrag(null)
   }
 
-  const handlers = useRef({ move: onPointerMove, up: onPointerUp })
+  // ---- Trackpad / mouse wheel ----
+  // A two-finger swipe on a laptop trackpad arrives as scroll ("wheel") events, not a drag.
+  // Add up the scrolling; once it passes WHEEL_DISTANCE, throw the card that way.
+  const wheel = useRef({ x: 0, y: 0, t: 0, settling: false })
+  const onWheel = (e: WheelEvent) => {
+    // Let a card with more content scroll normally first
+    const body = (e.target as HTMLElement).closest('.story-body') as HTMLElement | null
+    if (body && Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+      const canScroll = e.deltaY > 0 ? body.scrollTop + body.clientHeight < body.scrollHeight - 1 : body.scrollTop > 0
+      if (canScroll) return
+    }
+    e.preventDefault()
+
+    const w = wheel.current
+    const now = performance.now()
+    const gap = now - w.t
+    w.t = now
+    // After a throw, ignore the trackpad's leftover momentum until it stops
+    if (w.settling) {
+      if (gap < WHEEL_SETTLE_MS) return
+      w.settling = false
+    }
+    if (gap > 250) {
+      w.x = 0
+      w.y = 0
+    }
+    w.x += e.deltaX
+    w.y += e.deltaY
+    if (Math.hypot(w.x, w.y) > WHEEL_DISTANCE) {
+      if (current < count - 1) {
+        // fingers move left -> content scrolls right (+deltaX) -> card flies left
+        setExits((prev) => ({ ...prev, [current]: exitFor(-w.x, -w.y) }))
+        setIndex(current + 1)
+      }
+      w.x = 0
+      w.y = 0
+      w.settling = true
+    }
+  }
+
+  const handlers = useRef({ move: onPointerMove, up: onPointerUp, wheel: onWheel })
   useEffect(() => {
-    handlers.current = { move: onPointerMove, up: onPointerUp }
+    handlers.current = { move: onPointerMove, up: onPointerUp, wheel: onWheel }
   })
   useEffect(() => {
     const move = (e: PointerEvent) => handlers.current.move(e)
     const up = () => handlers.current.up()
+    const wheelHandler = (e: WheelEvent) => handlers.current.wheel(e)
+    const deck = deckRef.current
     window.addEventListener('pointermove', move)
     window.addEventListener('pointerup', up)
     window.addEventListener('pointercancel', up)
+    // passive: false so the page itself doesn't scroll while swiping cards
+    deck?.addEventListener('wheel', wheelHandler, { passive: false })
     return () => {
       window.removeEventListener('pointermove', move)
       window.removeEventListener('pointerup', up)
       window.removeEventListener('pointercancel', up)
+      deck?.removeEventListener('wheel', wheelHandler)
     }
   }, [])
 
@@ -160,6 +208,7 @@ export function StoryDeck({ topics, prefs, onOpenPreferences }: Props) {
     const rel = i - current
     let transform = 'none'
     let opacity = 1
+    let filter = 'none'
 
     if (rel < 0) {
       const ex = exits[i] ?? exitFor(-1, -0.15)
@@ -172,12 +221,15 @@ export function StoryDeck({ topics, prefs, onOpenPreferences }: Props) {
       const pull = drag ? Math.min(1, Math.hypot(drag.x, drag.y) / (Math.min(size.w, size.h) * SWIPE_DISTANCE * 1.5)) : 0
       const depth = Math.max(0, rel - pull)
       transform = `translateY(${depth * 10}px) scale(${1 - depth * 0.045})`
-      opacity = rel > STACK_DEPTH ? 0 : 1 - depth * 0.25
+      // Darken cards further down the stack (stays solid, so the card behind never shows through)
+      filter = `brightness(${1 - depth * 0.3})`
+      opacity = rel > STACK_DEPTH ? 0 : 1
     }
 
     return {
       transform,
       opacity,
+      filter,
       zIndex: count - i,
       transition: drag && rel === 0 ? 'none' : undefined,
     }
