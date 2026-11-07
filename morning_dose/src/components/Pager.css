@@ -1,0 +1,11 @@
+.pager {
+  display: flex;
+  height: 100%;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory; /* stop on a page, not halfway between */
+}
+
+.pager-page {
+  flex: 0 0 100%; /* each page is exactly one screen wide */
+  scroll-snap-align: start;
+}
