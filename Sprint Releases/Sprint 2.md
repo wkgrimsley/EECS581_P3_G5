@@ -66,7 +66,7 @@ Set up a system to save user information between access
 
 ---
 
-## Story 6: Improve Swipe funcionality to website and extend upon UI
+## Story 5: Improve Swipe funcionality to website and extend upon UI
 
 **Description:**  
 Create mechanism to swipe backwards to go to previous and continue working on UI
