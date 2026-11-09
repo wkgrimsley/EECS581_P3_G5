@@ -104,10 +104,14 @@ Implement mechanics to swipe (or at least switch in some way) between sources of
 
 | Story | Story Points | Assigned To | Status |
 |---|---:|---|---|
-| Story 1 | 8 | [Name(s)] | Not Started |
-| Story 2 | 3 | [Names(s)] | Not Started |
+| Story 1 | 8 | Felix Balandran, Riley Backus | Completed |
+| Story 2 | 3 | Jamareon Davis | Completed |
 | Story 3 | 3 | Bill Grimsley | Completed |
-| Story 4 | 3 | [Name(s)] | Not Started |
+| Story 4 | 3 | John Vitha | Completed |
 | Story 5 | 5 | Bill Grimsley | Completed |
 | Story 6 | 3 | [Name(s)] | Not Started |
 | **Total** | **25** | — | — |
+
+Other things done during sprint
+Weather Poller: 3 story points, John Vitha completed
+Swipe Functionality: 3 story points, Jamareon Davis
