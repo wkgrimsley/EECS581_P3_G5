@@ -16,14 +16,12 @@ python -m pip install --user pipenv
 python -m pipenv install
 python -m pipenv shell
 python news_poller.py
-
 '''
 
 import os
 import requests
 import json
 import argparse
-
 
 API_KEY = os.getenv("WEATHER_API_KEY")
 
@@ -33,6 +31,27 @@ FORECAST_URL = "https://api.weatherapi.com/v1/forecast.json"
 SEARCH_URL = "https://api.weatherapi.com/v1/search.json"
 ALERTS_URL = "https://api.weatherapi.com/v1/alerts.json"
 
+def make_request(url, params):
+    try:
+        response = requests.get(url, params=params, timeout=10)
+        response.raise_for_status()
+
+        data = response.json()
+        return data
+    
+    except requests.exceptions.HTTPError as e:
+        if e.response.status_code == 400:
+            print("Invalid input entered.")
+        elif e.response.status_code == 401:
+            print("Invalid API key.")
+        else:
+            print(f"API error: {e.reponse.status_code}")
+        return None
+    
+    except requests.exceptions.RequestException as e:
+        print(f"Request error: {e}")
+        return None
+    
 def search_cities(query):
 
     params = {
@@ -40,11 +59,7 @@ def search_cities(query):
         "q" : query
     }
 
-    response = requests.get(CURRENT_URL, params=params, timeout=10)
-    response.raise_for_status()
-    
-    data = response.json()
-    return data
+    return make_request(CURRENT_URL, params)
 
 
 def pull_current(city):
@@ -56,11 +71,7 @@ def pull_current(city):
         "aqi" : "no" 
     }
 
-    response = requests.get(CURRENT_URL, params=params, timeout=10)
-    response.raise_for_status()
-
-    data = response.json()
-    return data
+    return make_request(CURRENT_URL, params)
 
 def pull_air_quality(city):
     ''' Pull air quality data. '''
@@ -71,11 +82,7 @@ def pull_air_quality(city):
         "aqi" : "yes"
     }
 
-    response = requests.get(CURRENT_URL, params=params, timeout=10)
-    response.raise_for_status()
-
-    data = response.json()
-    return data["current"]["air_quality"]
+    return make_request(CURRENT_URL, params)["current"]["air_quality"]
 
 def pull_alerts(city):
     ''' Pull inclement weather alerts. '''
@@ -85,11 +92,7 @@ def pull_alerts(city):
         "q" : city
     }
 
-    response = requests.get(ALERTS_URL, params=params, timeout=10)
-    response.raise_for_status()
-
-    data = response.json()
-    return data
+    return make_request(ALERTS_URL, params)
 
 def pull_hourly(city):
     ''' Pull hourly weather for the day. '''
@@ -98,12 +101,8 @@ def pull_hourly(city):
             "q" : city,
             "days" : 1
     }
-    
-    response = requests.get(FORECAST_URL, params=params, timeout=10)
-    response.raise_for_status()
-    
-    data = response.json()
-    return data["forecast"]["forecastday"][0]["hour"]
+
+    return make_request(FORECAST_URL, params)["forecast"]["forecastday"][0]["hour"]
 
 def pull_daily_summary(city):
     ''' Pull weather summary for the day. '''
@@ -113,11 +112,7 @@ def pull_daily_summary(city):
             "days" : 1
     }
     
-    response = requests.get(FORECAST_URL, params=params, timeout=10)
-    response.raise_for_status()
-    
-    data = response.json()
-    return data["forecast"]["forecastday"][0]["day"]
+    return make_request(FORECAST_URL, params)["forecast"]["forecastday"][0]["day"]
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Get current weather for a city")

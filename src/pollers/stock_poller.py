@@ -30,6 +30,28 @@ SEARCH_URL = "https://finnhub.io/api/v1/search"
 QUOTE_URL = "https://finnhub.io/api/v1/quote"
 COMPANY_PROFILE_URL = "https://finnhub.io/api/v1/profile2"
 
+def make_request(url, params):
+    try:
+        response = requests.get(url, params=params, timeout=10)
+        response.raise_for_status()
+
+        data = response.json()
+        return data
+    
+    except requests.exceptions.HTTPError as e:
+        if e.response.status_code == 400:
+            print("Invalid input entered.")
+        elif e.response.status_code == 401:
+            print("Invalid API key.")
+        else:
+            print(f"API error: {e.reponse.status_code}")
+        return None
+    
+    except requests.exceptions.RequestException as e:
+        print(f"Request error: {e}")
+        return None
+
+
 def search_stocks(query):
     ''' Search for best-matching stock symbols by query. Can input anything from symbol, security's name to ISIN and Cusip.'''
     params = {
@@ -37,11 +59,7 @@ def search_stocks(query):
         "q" : query
     }
 
-    response = requests.get(SEARCH_URL, params=params, timeout=10)
-    response.raise_for_status()
-        
-    data = response.json()
-    return data["result"]
+    return make_request(QUOTE_URL, params)["result"]
 
 def pull_quote(symbol):
     ''' Pull quote for stock. '''
@@ -51,11 +69,7 @@ def pull_quote(symbol):
         "q" : symbol
     }
 
-    response = requests.get(SEARCH_URL, params=params, timeout=10)
-    response.raise_for_status()
-        
-    data = response.json()
-    return data
+    return make_request(SEARCH_URL, params)
 
 def pull_company_profile(symbol):
     ''' Pull company profile for stock. '''
@@ -65,11 +79,8 @@ def pull_company_profile(symbol):
         "q" : symbol
     }
 
-    response = requests.get(SEARCH_URL, params=params, timeout=10)
-    response.raise_for_status()
-        
-    data = response.json()
-    return data
+    return make_request(COMPANY_PROFILE_URL, params)
+    
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Get stock information")
