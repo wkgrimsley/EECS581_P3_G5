@@ -9,21 +9,7 @@
 
 ---
 
-## Story 1: Create Weather Data Poller
-
-**Description:**  
-Create a poller to get local weather information to frontend
-
-**Story Points:** 3
-
-**Assigned To:** [Name(s)]
-
-**Completion Criteria:**
-- Weather data for location is pulled in to frontend
-
----
-
-## Story 2: Create Sports Data Poller
+## Story 1: Create Sports Data Poller
 
 **Description:**  
 Create poller to bring in sports results and information for decided preferences
@@ -37,7 +23,7 @@ Create poller to bring in sports results and information for decided preferences
 
 ---
 
-## Story 3: Implement full website that brings components together
+## Story 2: Implement full website that brings components together
 
 **Description:**  
 Finish creating the website itself to a viewable state that pulls all components together for initial testing
@@ -51,7 +37,7 @@ Finish creating the website itself to a viewable state that pulls all components
 
 ---
 
-## Story 4: Daily Reminders and Notes
+## Story 3: Daily Reminders and Notes
 
 **Description:**  
 Add implementation for user to put notes and daily reminders to be seen at the beginning of each day
@@ -66,7 +52,7 @@ Add implementation for user to put notes and daily reminders to be seen at the b
 
 ---
 
-## Story 5: Create Config for Saving User Accounts and Information
+## Story 4: Create Config for Saving User Accounts and Information
 
 **Description:**  
 Set up a system to save user information between access
@@ -80,10 +66,10 @@ Set up a system to save user information between access
 
 ---
 
-## Story 6: Create Swipe funcionality to website
+## Story 6: Improve Swipe funcionality to website and extend upon UI
 
 **Description:**  
-Implement mechanics to swipe (or at least switch in some way) between sources of information in the UI
+Create mechanism to swipe backwards to go to previous and continue working on UI
 
 **Story Points:** 3
 
@@ -99,10 +85,9 @@ Implement mechanics to swipe (or at least switch in some way) between sources of
 
 | Story | Story Points | Assigned To | Status |
 |---|---:|---|---|
-| Story 1 | 3 | [Name(s)] | Not Started |
-| Story 2 | 5 | [Name(s)] | Not Started |
-| Story 3 | 3 | [Name(s)] | Not Started |
-| Story 4 | 2 | [Name(s)] | Not Started |
-| Story 5 | 8 | [Name(s)] | Not Started |
-| Story 6 | 3 | [Name(s)] | Not Started |
-| **Total** | **24** | — | — |
+| Story 1 | 5 | [Name(s)] | Not Started |
+| Story 2 | 3 | [Name(s)] | Not Started |
+| Story 3 | 2 | [Name(s)] | Not Started |
+| Story 4 | 8 | [Name(s)] | Not Started |
+| Story 5 | 3 | [Name(s)] | Not Started |
+| **Total** | **21** | — | — |
