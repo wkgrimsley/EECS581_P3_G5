@@ -4,7 +4,7 @@ Swipeable story deck (Sprint 1 Story 6 / backlog #6).
 Topics are a stack of cards. Swipe the top card away in ANY direction to
 reveal the next topic; it flies off the way you threw it. Works with touch,
 click-and-drag, and two-finger swipes on a laptop trackpad (or a mouse wheel).
-Go back by tapping a segment in the progress bar or pressing the left arrow key.
+Jump to any topic by tapping its name in the tabs at the top, or use the arrow keys.
 
 Author: Jamareon Davis
 Creation Date: 2026-11-06
@@ -58,7 +58,7 @@ export function StoryDeck({ topics, prefs, onOpenPreferences }: Props) {
   const goTo = (target: number) => {
     const i = Math.max(0, Math.min(count - 1, target))
     if (i > current) {
-      // Cards skipped with keys/progress bar leave to the left
+      // Cards skipped with the tabs or arrow keys leave to the left
       setExits((prev) => {
         const next = { ...prev }
         for (let k = current; k < i; k++) next[k] = exitFor(-1, -0.15)
@@ -239,6 +239,7 @@ export function StoryDeck({ topics, prefs, onOpenPreferences }: Props) {
 
   return (
     <div className="deck-wrap">
+      {/* Topic tabs: tap a name to jump to that card. The line under each name shows progress. */}
       <div className="progress" role="tablist" aria-label="Topics">
         {topics.map((id, i) => (
           <button
@@ -248,7 +249,10 @@ export function StoryDeck({ topics, prefs, onOpenPreferences }: Props) {
             aria-label={TOPICS[id].label}
             className={i < current ? 'seg seen' : i === current ? 'seg current' : 'seg'}
             onClick={() => goTo(i)}
-          />
+          >
+            <span className="seg-label">{TOPICS[id].label}</span>
+            <span className="seg-bar" aria-hidden />
+          </button>
         ))}
       </div>
 
