@@ -16,7 +16,6 @@ python -m pip install --user pipenv
 python -m pipenv install
 python -m pipenv shell
 python stock_poller.py
-
 '''
 
 import os
@@ -59,7 +58,7 @@ def search_stocks(query):
         "q" : query
     }
 
-    return make_request(QUOTE_URL, params)["result"]
+    return make_request(SEARCH_URL, params)["result"]
 
 def pull_quote(symbol):
     ''' Pull quote for stock. '''
@@ -69,7 +68,7 @@ def pull_quote(symbol):
         "q" : symbol
     }
 
-    return make_request(SEARCH_URL, params)
+    return make_request(QUOTE_URL, params)
 
 def pull_company_profile(symbol):
     ''' Pull company profile for stock. '''
