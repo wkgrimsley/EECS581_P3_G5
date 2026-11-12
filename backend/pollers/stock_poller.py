@@ -7,7 +7,6 @@ IF YOU WANT ACCESS FOR TESTING -> SEND j243v784@ku.edu email asking for access t
 
 Architecture:
 Retrieves weather data from  Finnhub using an API key and location provided through command-line arguments
----
 Data is parsed and organized into a JSON payload for the backend
 Backend then sends the processed data to the frontend for display to the user
 
@@ -16,7 +15,6 @@ python -m pip install --user pipenv
 python -m pipenv install
 python -m pipenv shell
 python stock_poller.py
-
 '''
 
 import os
