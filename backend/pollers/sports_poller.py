@@ -17,6 +17,22 @@ python -m pipenv shell
 python sports_poller.py
 '''
 
+SPORTS = ["football", "asl", "baseball", "baseball", "f1", "hockey", "mma", "nba", "nfl", "rugby", "volleyball"]
+
+sports = {
+    "football" : "https://v1.football.api-sports.io",
+    "asl" : "https://v1.asl.api-sports.io",
+    "baseball" : "https://v1.baseball.api-sports.io",
+    "basketball" : "https://v1.basketball.api-sports.io",
+    "f1" : "https://v1.f1.api-sports.io",
+    "hockey" : "https://v1.hockey.api-sports.io",
+    "mma" : "https://v1.mma.api-sports.io",
+    "nba" : "https://v1.nba.api-sports.io",
+    "nfl" : "https://v1.nfl.api-sports.io",
+    "rugby" : "https://v1.rugby.api-sports.io",
+    "volleyball" : "https://v1.volleyball.api-sports.io",
+}
+
 import os
 import requests
 import json
@@ -45,6 +61,12 @@ def make_request(url, params):
         print(f"Request error: {e}")
         return None
 
+def get_leagues(url):
+
+    params = {
+        
+    }
+
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Get sports information")
 
@@ -65,6 +87,12 @@ def parse_arguments():
     return parser.parse_args()
 
 def main():
+    while(True):
+        sport = input("Enter sport: ")
+        if sport in sports:
+            break
+
+    url = sports[sport]
     args = parse_arguments()
     output = {}
 
