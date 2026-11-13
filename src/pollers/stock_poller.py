@@ -35,6 +35,10 @@ def make_request(url, params):
         response.raise_for_status()
 
         data = response.json()
+        if data.get("errors"):
+            print(f"API error: {data['errors']}")
+            return None
+        
         return data
     
     except requests.exceptions.HTTPError as e:
@@ -43,7 +47,7 @@ def make_request(url, params):
         elif e.response.status_code == 401:
             print("Invalid API key.")
         else:
-            print(f"API error: {e.reponse.status_code}")
+            print(f"API error: {e.response.status_code}")
         return None
     
     except requests.exceptions.RequestException as e:
