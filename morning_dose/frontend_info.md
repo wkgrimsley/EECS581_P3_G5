@@ -38,6 +38,7 @@ src/
     weather.ts               Mock until weather poller is registered
     sports.ts                Mock until sports poller is registered
     calendar.ts              Mock until a calendar poller is written
+    notes.ts                 Notes + daily reminders, saved in the browser (swap for accounts later)
     mockData.ts              Placeholder data
     options.ts               Choices shown on the Preferences page
   topics/registry.ts         List of story cards (which page + which loader + which preferences)
@@ -47,7 +48,7 @@ src/
     MoreMenu.tsx/.css        The ⋯ menu in the header
     Pager.tsx/.css           Earlier side-scrolling pager (not used right now)
   pages/
-    WeatherPage, NewsPage, StocksPage, SportsPage, CalendarPage.tsx
+    NotesPage, WeatherPage, NewsPage, StocksPage, SportsPage, CalendarPage.tsx
                              What each card displays (styles in cards.css)
     prefrences.tsx/.css      Preferences page
     Welcome.tsx              Earlier welcome page (not used right now)

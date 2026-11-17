@@ -1,7 +1,7 @@
-/* Content inside each story card (Weather, News, Stocks, Sports pages).
-   Colors come from the theme in index.css. */
+/* Styles for what's inside each card (Weather, News, Stocks, Sports, Calendar, Notes).
+   Colors come from the theme in index.css */
 
-/* ---------- Weather ---------- */
+/* Weather */
 .weather-location { color: var(--color-text-muted); font-size: 17px; }
 .weather-temp {
   font-size: 104px; font-weight: 200; letter-spacing: -0.05em; line-height: 1;
@@ -17,7 +17,7 @@
 .hourly li { display: flex; flex-direction: column; gap: 6px; font-size: 15px; }
 .hourly .muted { font-size: 13px; }
 
-/* ---------- Lists (news, stocks, sports) ---------- */
+/* Lists (news, stocks, sports) */
 .rows { list-style: none; margin: 0; padding: 0; }
 .rows > li { padding: 14px 0; border-top: 0.5px solid var(--color-border); }
 .rows > li:first-child { border-top: 0; padding-top: 0; }
@@ -58,8 +58,54 @@
 .game .winner { font-weight: 600; }
 .game .loser { color: var(--color-text-muted); }
 
-/* ---------- Calendar ---------- */
+/* Calendar */
 .event { display: flex; gap: 16px; align-items: baseline; }
 .event-time { flex: none; width: 76px; font-size: 15px; display: flex; flex-direction: column; gap: 2px; }
 .event-title { display: block; }
 .event-location { display: block; margin-top: 2px; }
+
+/* Notes & reminders */
+.notes { display: flex; flex-direction: column; gap: 28px; }
+.notes-heading { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+.notes-empty { margin-bottom: 8px; }
+
+.reminders { list-style: none; margin: 0; padding: 0; }
+.reminder { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-top: 0.5px solid var(--color-border); }
+.reminder:first-child { border-top: 0; }
+.reminder-check {
+  flex: none; width: 22px; height: 22px; border-radius: 50%;
+  border: 1.5px solid var(--color-text-muted);
+  display: grid; place-items: center;
+  transition: background var(--transition), border-color var(--transition);
+}
+.reminder.done .reminder-check { background: var(--color-text); border-color: var(--color-text); color: var(--color-bg); }
+.reminder-text { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.reminder.done .reminder-text { color: var(--color-text-muted); text-decoration: line-through; }
+
+.note-delete {
+  flex: none; width: 24px; height: 24px; display: grid; place-items: center;
+  border-radius: 6px; color: var(--color-text-faint);
+}
+.note-delete:hover { color: var(--color-text); background: var(--color-surface-raised); }
+
+.notes-add { display: flex; gap: 8px; align-items: flex-start; margin-top: 8px; }
+.notes-add input,
+.notes-add textarea {
+  flex: 1; min-width: 0;
+  background: var(--color-surface-raised); border: 1px solid transparent; border-radius: 10px;
+  padding: 10px 12px; outline: none; font: inherit; color: var(--color-text);
+}
+.notes-add textarea { resize: none; line-height: 1.35; }
+.notes-add input:focus, .notes-add textarea:focus { border-color: var(--color-text-muted); }
+.notes-add input::placeholder, .notes-add textarea::placeholder { color: var(--color-text-faint); }
+.notes-add-note { flex-direction: column; align-items: stretch; margin: 0 0 12px; }
+.notes-add-note .small-btn { align-self: flex-end; }
+.small-btn { padding: 8px 14px; font-size: 0.875rem; }
+
+.note-list { list-style: none; margin: 0; padding: 0; }
+.note { padding: 12px 0; border-top: 0.5px solid var(--color-border); }
+.note:first-child { border-top: 0; padding-top: 4px; }
+.note-text { white-space: pre-wrap; overflow-wrap: anywhere; }
+.note-meta { display: flex; justify-content: space-between; align-items: center; color: var(--color-text-muted); font-size: var(--text-sm); margin-top: 4px; }
+.show-earlier { color: var(--color-text-muted); font-size: 0.9375rem; text-decoration: underline; text-underline-offset: 3px; margin-top: 8px; }
+.show-earlier:hover { color: var(--color-text); }

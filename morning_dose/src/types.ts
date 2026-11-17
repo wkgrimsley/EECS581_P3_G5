@@ -1,15 +1,15 @@
 /*
-Shared data types for the Morning Snapshot frontend.
+Data types used across the frontend
 
-The UI only ever works with these shapes. Whatever a poller returns gets
-converted into one of these by the matching adapter in src/api/<topic>.ts,
-so a poller's output format can change without touching any UI code.
+The UI only uses these types. Whatever a poller sends back gets converted
+into one of these in src/api/<topic>.ts, so if a poller's output changes
+we only have to fix that one file and not the UI.
 
 Author: Jamareon Davis
 Creation Date: 2026-11-06
 */
 
-export type TopicId = 'weather' | 'news' | 'stocks' | 'sports' | 'calendar'
+export type TopicId = 'notes' | 'weather' | 'news' | 'stocks' | 'sports' | 'calendar'
 
 export interface HourlyForecast {
   time: string // ISO timestamp
@@ -62,6 +62,25 @@ export interface CalendarEvent {
   end?: string // ISO timestamp
   allDay?: boolean
   location?: string
+}
+
+// a reminder shows up every morning, checking it off only counts for that day
+export interface Reminder {
+  id: string
+  text: string
+  doneOn?: string // the date (YYYY-MM-DD) it was last checked off
+}
+
+// a note is saved with the time it was written and stays until it's deleted
+export interface Note {
+  id: string
+  text: string
+  createdAt: string // ISO timestamp
+}
+
+export interface NotesData {
+  reminders: Reminder[]
+  notes: Note[]
 }
 
 export interface Preferences {
