@@ -1,10 +1,10 @@
-/* Story deck and story cards. Colors come from the theme in index.css. */
+/* Styles for the story deck and cards. Colors come from the theme in index.css */
 
 .deck-wrap { flex: 1; display: flex; flex-direction: column; min-height: 0; }
 
-/* Topic tabs: a name per topic with a progress line under it */
-/* Equal widths when there's room; a tab never gets narrower than its name.
-   With many topics the row scrolls sideways instead of cutting names off. */
+/* Topic tabs: each topic's name with a line under it to show progress */
+/* tabs are the same width when there's room but never get smaller than the name.
+   if there are a lot of topics the row scrolls sideways so names don't get cut off */
 .progress { display: flex; gap: 6px; padding: 0 2px 14px; overflow-x: auto; scrollbar-width: none; }
 .progress::-webkit-scrollbar { display: none; }
 .seg {
@@ -13,7 +13,7 @@
   flex-direction: column;
   align-items: stretch;
   gap: 6px;
-  padding-top: 4px; /* a little extra tap area above the name */
+  padding-top: 4px; /* a bit more space to tap above the name */
   color: var(--color-text-faint);
   transition: color var(--transition);
 }
@@ -35,9 +35,9 @@
   flex: 1;
   min-height: 0;
   margin-bottom: 20px; /* room for the cards stacked underneath */
-  touch-action: none; /* every direction is a swipe */
+  touch-action: none; /* we handle every swipe direction ourselves */
 }
-/* scroll containers inside a card would otherwise reset touch-action and let the browser steal the swipe */
+/* scrolling areas inside a card would reset touch-action and the browser would take over the swipe */
 .deck * { touch-action: none; }
 .deck.dragging { cursor: grabbing; user-select: none; }
 
@@ -64,8 +64,9 @@
   overflow-y: auto;
   scrollbar-width: none;
   padding: 20px 24px 24px;
-  -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 24px), transparent);
-  mask-image: linear-gradient(to bottom, #000 calc(100% - 24px), transparent);
+  /* fades the top and bottom edges when a card scrolls */
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 16px, #000 calc(100% - 24px), transparent);
+  mask-image: linear-gradient(to bottom, transparent, #000 16px, #000 calc(100% - 24px), transparent);
 }
 .story-body::-webkit-scrollbar { display: none; }
 
