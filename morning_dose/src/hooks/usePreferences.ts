@@ -1,26 +1,13 @@
-/*
-User preferences, saved in the browser for now.
-
-Which topics are switched on is stored with Felix's loadEnabledModules /
-saveEnabledModules in src/modules.ts, so there is one source of truth for that.
-Everything else (order, location, keywords, stocks, ...) is stored here.
-
-When user accounts land (Sprint 2, Story 5), swap the load/save functions
-for backend calls — nothing else in the UI needs to change.
-
-Author: Jamareon Davis
-Creation Date: 2026-11-06
-*/
 import { useEffect, useState } from 'react'
-import { loadEnabledModules, saveEnabledModules } from '../modules'
+import { supabase } from '../lib/supabase'
 import type { Preferences, TopicId } from '../types'
 
-const STORAGE_KEY = 'morningDose.preferences'
 const TOPIC_IDS: TopicId[] = ['weather', 'calendar', 'news', 'stocks', 'sports']
+const ENABLED_TOPIC_IDS: TopicId[] = [...TOPIC_IDS, 'notes']
 
 export const defaultPreferences: Preferences = {
   topicOrder: ['weather', 'calendar', 'news', 'stocks', 'sports'],
-  enabled: { weather: true, calendar: true, news: true, stocks: true, sports: true },
+  enabled: { notes: false, weather: true, calendar: true, news: true, stocks: true, sports: true },
   location: 'Lawrence, KS',
   stocks: ['AAPL', 'MSFT', 'NVDA'],
   newsKeywords: ['technology'],
@@ -28,40 +15,102 @@ export const defaultPreferences: Preferences = {
   leagues: [],
 }
 
-function loadPreferences(): Preferences {
-  let saved: Partial<Preferences> = {}
-  try {
-    saved = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '{}')
-  } catch {
-    // unreadable — fall back to defaults
-  }
-  let enabledIds: string[] = TOPIC_IDS
-  try {
-    enabledIds = loadEnabledModules()
-  } catch {
-    // storage unavailable
-  }
-  const enabled = Object.fromEntries(TOPIC_IDS.map((id) => [id, enabledIds.includes(id)])) as Record<TopicId, boolean>
-  // keep any topics added later that an older saved order doesn't know about
-  const order = (saved.topicOrder ?? []).filter((id) => TOPIC_IDS.includes(id))
-  const topicOrder = [...order, ...TOPIC_IDS.filter((id) => !order.includes(id))]
-  return { ...defaultPreferences, ...saved, topicOrder, enabled }
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
 }
 
-function savePreferences(prefs: Preferences) {
-  try {
-    const { enabled, ...rest } = prefs
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(rest))
-    // Keep any modules that aren't story cards yet as they were
-    const others = loadEnabledModules().filter((id) => !TOPIC_IDS.includes(id as TopicId))
-    saveEnabledModules([...others, ...TOPIC_IDS.filter((id) => enabled[id])])
-  } catch {
-    // storage unavailable (private browsing etc.) — keep in memory only
+function stringArray(value: unknown, fallback: string[]): string[] {
+  return Array.isArray(value) && value.every((item) => typeof item === 'string') ? value : fallback
+}
+
+function normalizePreferences(value: unknown): Preferences {
+  const saved = isRecord(value) ? value : {}
+  const savedEnabled = isRecord(saved.enabled) ? saved.enabled : {}
+  const enabled = { ...defaultPreferences.enabled }
+  for (const id of ENABLED_TOPIC_IDS) {
+    const savedValue = savedEnabled[id]
+    enabled[id] = typeof savedValue === 'boolean' ? savedValue : defaultPreferences.enabled[id]
+  }
+
+  const savedOrder = stringArray(saved.topicOrder, defaultPreferences.topicOrder)
+    .filter((id): id is TopicId => TOPIC_IDS.includes(id as TopicId))
+  const topicOrder = [...new Set(savedOrder), ...TOPIC_IDS.filter((id) => !savedOrder.includes(id))]
+
+  return {
+    topicOrder,
+    enabled,
+    location: typeof saved.location === 'string' ? saved.location : defaultPreferences.location,
+    stocks: stringArray(saved.stocks, defaultPreferences.stocks),
+    newsKeywords: stringArray(saved.newsKeywords, defaultPreferences.newsKeywords),
+    newsSources: stringArray(saved.newsSources, defaultPreferences.newsSources),
+    leagues: stringArray(saved.leagues, defaultPreferences.leagues),
   }
 }
 
-export function usePreferences() {
-  const [prefs, setPrefs] = useState<Preferences>(loadPreferences)
-  useEffect(() => savePreferences(prefs), [prefs])
-  return [prefs, setPrefs] as const
+export function usePreferences(userId: string) {
+  const [prefs, setPrefs] = useState<Preferences>(defaultPreferences)
+  const [loadState, setLoadState] = useState<{
+    userId: string | null
+    request: number
+    loading: boolean
+    error: string | null
+  }>({ userId: null, request: -1, loading: true, error: null })
+  const [retryCount, setRetryCount] = useState(0)
+
+  useEffect(() => {
+    let active = true
+
+    void (async () => {
+      const { data, error } = await supabase
+        .from('user_preferences')
+        .select('preferences')
+        .eq('user_id', userId)
+        .maybeSingle()
+
+      if (!active) return
+      if (error) {
+        setLoadState({ userId, request: retryCount, loading: false, error: error.message })
+        return
+      }
+
+      setPrefs(normalizePreferences(data?.preferences))
+      setLoadState({ userId, request: retryCount, loading: false, error: null })
+    })().catch((cause: unknown) => {
+      if (!active) return
+      setLoadState({
+        userId,
+        request: retryCount,
+        loading: false,
+        error: cause instanceof Error ? cause.message : 'Unable to load preferences.',
+      })
+    })
+
+    return () => {
+      active = false
+    }
+  }, [userId, retryCount])
+
+  const savePreferences = async (nextPreferences: Preferences) => {
+    const { error } = await supabase
+      .from('user_preferences')
+      .upsert(
+        {
+          user_id: userId,
+          preferences: nextPreferences,
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: 'user_id' },
+      )
+
+    if (error) throw error
+    setPrefs(nextPreferences)
+  }
+
+  return {
+    prefs,
+    loading: loadState.userId !== userId || loadState.request !== retryCount || loadState.loading,
+    error: loadState.userId === userId && loadState.request === retryCount ? loadState.error : null,
+    savePreferences,
+    retry: () => setRetryCount((count) => count + 1),
+  } as const
 }

@@ -31,7 +31,7 @@ LAST_WEEK_DATE = time.strftime("%Y-%m-%d", time.localtime(time.time() - 604800))
 PAGE_SIZE = 3  # Number of articles to pull per keyword or source
 #general API URL and KEY
 API_URL = "https://newsapi.org/v2"
-API_KEY = os.getenv("NEWS_API_KEY")  # Get the API key from environment variable
+API_KEY = "0b2b7dad41974074a7da28dc27d6105a"  # Get the API key from environment variable
 
 def create_retry_session(retries=3, backoff_factor=0.3, status_forcelist=(500, 502, 504)):
     '''

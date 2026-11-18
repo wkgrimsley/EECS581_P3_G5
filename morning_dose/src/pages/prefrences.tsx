@@ -1,8 +1,7 @@
 /*
 Preferences page (Sprint 1 Story 2 / backlog #7).
-Builds on Felix's and Riley's versions: topic names/descriptions come from
-MODULES in src/modules.ts, on/off is saved with saveEnabledModules(), and
-changes are a draft until the user presses Save.
+Topic names/descriptions come from MODULES in src/modules.ts. Changes stay
+as a draft until the user presses Save and are then stored for their account.
 Choose which topics show, their order, and what each topic pulls.
 These values are what get sent to the backend pollers.
 
@@ -24,6 +23,8 @@ type Props = {
   onDiscard: () => void // throw the draft away
   dirty: boolean // draft differs from what's saved
   justSaved: boolean
+  saving?: boolean
+  saveError?: string | null
 }
 
 const toggle = (list: string[], item: string) =>
@@ -73,7 +74,16 @@ function TileGrid({ options, selected, onToggle }: {
   )
 }
 
-export default function Prefrences({ prefs, onChange, onSave, onDiscard, dirty, justSaved }: Props) {
+export default function Prefrences({
+  prefs,
+  onChange,
+  onSave,
+  onDiscard,
+  dirty,
+  justSaved,
+  saving = false,
+  saveError = null,
+}: Props) {
   const [keywordDraft, setKeywordDraft] = useState('')
   const set = (patch: Partial<Preferences>) => onChange({ ...prefs, ...patch })
   const enabledCount = prefs.topicOrder.filter((id) => prefs.enabled[id]).length
@@ -184,11 +194,14 @@ export default function Prefrences({ prefs, onChange, onSave, onDiscard, dirty, 
 
       <footer className="prefs-footer">
         <span className="muted small" aria-live="polite">
-          {dirty ? 'Unsaved changes' : justSaved ? 'Saved' : `${enabledCount} of ${prefs.topicOrder.length} topics on`}
+          {saveError ? <span className="negative" role="alert">{saveError}</span>
+            : saving ? 'Saving…'
+              : dirty ? 'Unsaved changes'
+                : justSaved ? 'Saved' : `${enabledCount} of ${prefs.topicOrder.length} topics on`}
         </span>
         <span className="prefs-actions">
-          {dirty && <button className="button secondary" onClick={onDiscard}>Discard</button>}
-          <button className="button" onClick={onSave} disabled={!dirty}>Save</button>
+          {dirty && <button className="button secondary" onClick={onDiscard} disabled={saving}>Discard</button>}
+          <button className="button" onClick={onSave} disabled={!dirty || saving}>{saving ? 'Saving…' : 'Save'}</button>
         </span>
       </footer>
     </div>
