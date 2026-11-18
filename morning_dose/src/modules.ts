@@ -16,22 +16,3 @@ export const MODULES: ModuleInfo[] = [
   { id: "stocks", name: "Stocks", description: "How the market is moving", icon: "📈" },
   { id: "calendar", name: "Calendar", description: "What's on your schedule", icon: "📅" },
 ];
-
-// ---- Saving & loading ----
-// localStorage keeps data in the browser between visits. It only stores
-// strings, so we convert our array to/from JSON. Later this could be
-// swapped for a call to the backend without changing the pages.
-
-const STORAGE_KEY = "morningDose.enabledModules";
-
-export function loadEnabledModules(): string[] {
-  const saved = localStorage.getItem(STORAGE_KEY);
-  if (saved === null) {
-    return MODULES.map((m) => m.id); // first visit: everything on
-  }
-  return JSON.parse(saved) as string[];
-}
-
-export function saveEnabledModules(ids: string[]): void {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(ids));
-}

@@ -22,6 +22,30 @@ VITE_USE_MOCKS=true
 
 and every card shows placeholder data instead.
 
+## Supabase authentication and preferences
+
+The app uses Supabase Auth for email/password accounts and stores preferences
+in `public.user_preferences`, with one JSON document per user. Create a Supabase
+project, enable Email under Authentication providers, then run
+[`supabase/migrations/20261118150000_create_user_preferences.sql`](../supabase/migrations/20261118150000_create_user_preferences.sql)
+in the Supabase SQL Editor. Row-level security restricts each user to their
+own preference row.
+
+Copy `.env.example` to `.env.local` and replace its placeholders with the
+project URL and publishable key from Supabase Project Settings → API. Do not
+put a service-role key in the frontend or commit `.env.local`. Set the Supabase
+Site URL and allowed redirect URL to the local Vite origin printed by `npm run dev`
+(normally `http://localhost:5173`). Restart Vite after changing environment
+variables.
+
+The app shows sign-up/sign-in before the story deck. If email confirmation is
+enabled, confirm the account through the email before signing in. Preferences
+load after authentication and are written to Supabase only when Save is pressed.
+Existing localStorage preferences are not copied automatically to avoid
+transferring one browser user's settings into another account. Notes and
+reminders remain stored locally as before; only their enabled/order preference
+is saved to the user's Supabase preferences.
+
 ## Where things live
 
 ```text
@@ -82,7 +106,9 @@ See the comment at the top of `src/topics/registry.ts` (add an id to `types.ts`,
 
 ## Preferences
 
-Preferences are saved in the browser for now. When user accounts are added (Sprint 2, Story 5), replace `loadPreferences` / `savePreferences` in `src/hooks/usePreferences.ts` with backend calls.
+Preferences are loaded and saved per authenticated Supabase user in
+`src/hooks/usePreferences.ts`. Supabase Auth is in `src/auth/`, and its client
+configuration is in `src/lib/supabase.ts`.
 
 ## Checks
 
