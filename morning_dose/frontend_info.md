@@ -1,6 +1,6 @@
 # Frontend Information
 
-The frontend is a React + TypeScript app (Vite) in `morning_dose/`. Each topic is a story card in a stack. Swipe the top card away in **any direction** to see the next topic. To go back to a topic, tap its name in the tabs at the top (or use the arrow keys on a computer). Preferences and Start over are in the ⋯ menu. Changes on the Preferences page take effect when you press Save.
+The frontend is a React + TypeScript app (Vite) in `morning_dose/`. Each topic is a story card in a stack. Swipe the top card away in **any direction** to see the next topic. To go back, tap a segment of the progress bar at the top (or use the arrow keys on a computer). Preferences and Start over are in the ⋯ menu. Changes on the Preferences page take effect when you press Save.
 
 ## Run it
 
@@ -38,7 +38,6 @@ src/
     weather.ts               Mock until weather poller is registered
     sports.ts                Mock until sports poller is registered
     calendar.ts              Mock until a calendar poller is written
-    notes.ts                 Notes + daily reminders, saved in the browser (swap for accounts later)
     mockData.ts              Placeholder data
     options.ts               Choices shown on the Preferences page
   topics/registry.ts         List of story cards (which page + which loader + which preferences)
@@ -48,7 +47,7 @@ src/
     MoreMenu.tsx/.css        The ⋯ menu in the header
     Pager.tsx/.css           Earlier side-scrolling pager (not used right now)
   pages/
-    NotesPage, WeatherPage, NewsPage, StocksPage, SportsPage, CalendarPage.tsx
+    WeatherPage, NewsPage, StocksPage, SportsPage, CalendarPage.tsx
                              What each card displays (styles in cards.css)
     prefrences.tsx/.css      Preferences page
     Welcome.tsx              Earlier welcome page (not used right now)

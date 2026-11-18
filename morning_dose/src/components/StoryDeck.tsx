@@ -1,12 +1,10 @@
 /*
-Swipeable story deck (Sprint 1 Story 6, backlog #6)
+Swipeable story deck (Sprint 1 Story 6 / backlog #6).
 
-Each topic is a card in a stack. You swipe the top card away in any direction
-to get to the next topic, and it flies off whichever way you threw it.
-Swiping works with touch, click and drag, and two finger swipes on a trackpad.
-To go back you can tap a topic's name in the tabs at the top or use the arrow keys.
-If a card has more stuff than fits (like a long Notes card), dragging up or
-down scrolls it instead of throwing it. Swiping sideways still throws it.
+Topics are a stack of cards. Swipe the top card away in ANY direction to
+reveal the next topic; it flies off the way you threw it. Works with touch,
+click-and-drag, and two-finger swipes on a laptop trackpad (or a mouse wheel).
+Go back by tapping a segment in the progress bar or pressing the left arrow key.
 
 Author: Jamareon Davis
 Creation Date: 2026-11-06
@@ -18,11 +16,11 @@ import type { Preferences, TopicId } from '../types'
 import { StoryCard } from './StoryCard'
 import './StoryDeck.css'
 
-const SWIPE_DISTANCE = 0.28 // how far you have to drag, as a fraction of the card size
-const FLICK_VELOCITY = 0.55 // px per ms, a fast flick counts even if it's short
-const STACK_DEPTH = 2 // how many cards you can see under the top one
-const WHEEL_DISTANCE = 80 // how much trackpad or mouse wheel scrolling throws a card
-const WHEEL_SETTLE_MS = 150 // wait this long after a throw so trackpad momentum doesn't skip cards
+const SWIPE_DISTANCE = 0.28 // fraction of the card's shorter side
+const FLICK_VELOCITY = 0.55 // px per ms — a quick flick also counts
+const STACK_DEPTH = 2 // cards visible underneath the top one
+const WHEEL_DISTANCE = 80 // px of trackpad/mouse-wheel scrolling that throws a card
+const WHEEL_SETTLE_MS = 150 // trackpad momentum: wait for this gap before accepting another throw
 
 type Point = { x: number; y: number }
 type Exit = Point & { rotate: number }
@@ -34,7 +32,7 @@ type Props = {
 }
 
 export function StoryDeck({ topics, prefs, onOpenPreferences }: Props) {
-  const count = topics.length + 1 // +1 for the "that's everything" card at the end
+  const count = topics.length + 1 // last card is the "that's everything" card
   const [index, setIndex] = useState(0)
   const current = Math.min(index, count - 1)
   const [exits, setExits] = useState<Record<number, Exit>>({})
@@ -42,29 +40,15 @@ export function StoryDeck({ topics, prefs, onOpenPreferences }: Props) {
   const [size, setSize] = useState({ w: 360, h: 560 })
 
   const deckRef = useRef<HTMLDivElement>(null)
-  // Info about the swipe that's happening right now. This is a ref instead of state
-  // so a really fast flick still works even if React hasn't re-rendered yet.
-  // x/y = where it started, dx/dy = how far it's moved, lx/ly/lt = last spot (for speed)
-  // mode starts as 'pending' and turns into 'drag' (throw the card) or
-  // 'scroll' (scroll a card that has more than fits) once you move a bit
-  // body/startScroll = the card's scrolling area if it has more than fits
+  // Live gesture data kept in a ref (not state) so a very fast flick — where the
+  // finger lifts before React re-renders — still has its offset when it ends.
+  // x/y: start point; dx/dy: current offset; lx/ly/lt: latest sample (for flick speed)
   const gesture = useRef<
-    | (Point & {
-        mode: 'pending' | 'drag' | 'scroll'
-        body: HTMLElement | null
-        startScroll: number
-        dx: number
-        dy: number
-        lx: number
-        ly: number
-        lt: number
-        speed: number
-      })
-    | null
+    (Point & { active: boolean; dx: number; dy: number; lx: number; ly: number; lt: number; speed: number }) | null
   >(null)
   const didDrag = useRef(false)
 
-  // where a card goes when it's thrown, far enough to be off screen in any direction
+  // Card leaves along (dx, dy); far enough to clear the screen in any direction
   const exitFor = (dx: number, dy: number): Exit => {
     const len = Math.hypot(dx, dy) || 1
     const dist = Math.hypot(size.w, size.h) * 1.4
@@ -74,7 +58,7 @@ export function StoryDeck({ topics, prefs, onOpenPreferences }: Props) {
   const goTo = (target: number) => {
     const i = Math.max(0, Math.min(count - 1, target))
     if (i > current) {
-      // cards skipped with the tabs or arrow keys just fly off to the left
+      // Cards skipped with keys/progress bar leave to the left
       setExits((prev) => {
         const next = { ...prev }
         for (let k = current; k < i; k++) next[k] = exitFor(-1, -0.15)
@@ -102,32 +86,15 @@ export function StoryDeck({ topics, prefs, onOpenPreferences }: Props) {
     return () => window.removeEventListener('keydown', onKey)
   })
 
-  // Swiping
+  // ---- Gesture ----
   const onPointerDown = (e: ReactPointerEvent) => {
     if (e.pointerType === 'mouse' && e.button !== 0) return
-    // if you're selecting text in a text box with the mouse (like on the Notes card) don't swipe
-    // on touch screens swiping still works from a text box, and tapping one still opens it
-    if (e.pointerType === 'mouse' && (e.target as HTMLElement).closest('input, textarea, select')) return
-    const area = (e.target as HTMLElement).closest('.story-body') as HTMLElement | null
-    const body = area && area.scrollHeight > area.clientHeight + 1 ? area : null
-    gesture.current = {
-      x: e.clientX,
-      y: e.clientY,
-      mode: 'pending',
-      body,
-      startScroll: body?.scrollTop ?? 0,
-      dx: 0,
-      dy: 0,
-      lx: e.clientX,
-      ly: e.clientY,
-      lt: performance.now(),
-      speed: 0,
-    }
+    gesture.current = { x: e.clientX, y: e.clientY, active: false, dx: 0, dy: 0, lx: e.clientX, ly: e.clientY, lt: performance.now(), speed: 0 }
     didDrag.current = false
   }
 
-  // we listen for move/up on the whole window, not just the deck, so a fast drag
-  // that jumps off the card still counts
+  // Move/up are tracked on the whole window, not just the deck, so a fast drag
+  // that leaves the card area in one step is still seen.
   const onPointerMove = (e: PointerEvent) => {
     const g = gesture.current
     if (!g) return
@@ -138,17 +105,12 @@ export function StoryDeck({ topics, prefs, onOpenPreferences }: Props) {
     g.lx = e.clientX
     g.ly = e.clientY
     g.lt = now
-    if (g.mode === 'pending') {
+    if (!g.active) {
       if (Math.hypot(dx, dy) < 8) return
-      // if the card has more than fits and you're moving mostly up or down, scroll it
-      g.mode = g.body && Math.abs(dy) > Math.abs(dx) ? 'scroll' : 'drag'
+      g.active = true
       didDrag.current = true
     }
-    if (g.mode === 'scroll') {
-      if (g.body) g.body.scrollTop = g.startScroll - dy
-      return
-    }
-    // you can't throw the last card away, so it just moves a little and bounces back
+    // The last card can't be thrown away: resist instead
     const k = current === count - 1 ? 0.2 : 1
     g.dx = dx * k
     g.dy = dy * k
@@ -158,9 +120,9 @@ export function StoryDeck({ topics, prefs, onOpenPreferences }: Props) {
   const onPointerUp = () => {
     const g = gesture.current
     gesture.current = null
-    if (!g || g.mode !== 'drag') return
+    if (!g || !g.active) return
     const dist = Math.hypot(g.dx, g.dy)
-    // only counts as a flick if you were still moving fast when you let go
+    // only count a flick if the finger was still moving fast when it let go
     const velocity = performance.now() - g.lt < 100 ? g.speed : 0
     const thrown = dist > Math.min(size.w, size.h) * SWIPE_DISTANCE || velocity > FLICK_VELOCITY
     if (thrown && current < count - 1) {
@@ -170,12 +132,12 @@ export function StoryDeck({ topics, prefs, onOpenPreferences }: Props) {
     setDrag(null)
   }
 
-  // Trackpad and mouse wheel
-  // a two finger swipe on a laptop trackpad shows up as scroll ("wheel") events, not a drag,
-  // so we add up the scrolling and once it's past WHEEL_DISTANCE we throw the card that way
+  // ---- Trackpad / mouse wheel ----
+  // A two-finger swipe on a laptop trackpad arrives as scroll ("wheel") events, not a drag.
+  // Add up the scrolling; once it passes WHEEL_DISTANCE, throw the card that way.
   const wheel = useRef({ x: 0, y: 0, t: 0, settling: false })
   const onWheel = (e: WheelEvent) => {
-    // let a card with more stuff scroll normally first
+    // Let a card with more content scroll normally first
     const body = (e.target as HTMLElement).closest('.story-body') as HTMLElement | null
     if (body && Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
       const canScroll = e.deltaY > 0 ? body.scrollTop + body.clientHeight < body.scrollHeight - 1 : body.scrollTop > 0
@@ -187,7 +149,7 @@ export function StoryDeck({ topics, prefs, onOpenPreferences }: Props) {
     const now = performance.now()
     const gap = now - w.t
     w.t = now
-    // after a throw, ignore the leftover trackpad momentum until it stops
+    // After a throw, ignore the trackpad's leftover momentum until it stops
     if (w.settling) {
       if (gap < WHEEL_SETTLE_MS) return
       w.settling = false
@@ -200,7 +162,7 @@ export function StoryDeck({ topics, prefs, onOpenPreferences }: Props) {
     w.y += e.deltaY
     if (Math.hypot(w.x, w.y) > WHEEL_DISTANCE) {
       if (current < count - 1) {
-        // fingers go left, so deltaX is positive, so the card flies left
+        // fingers move left -> content scrolls right (+deltaX) -> card flies left
         setExits((prev) => ({ ...prev, [current]: exitFor(-w.x, -w.y) }))
         setIndex(current + 1)
       }
@@ -222,7 +184,7 @@ export function StoryDeck({ topics, prefs, onOpenPreferences }: Props) {
     window.addEventListener('pointermove', move)
     window.addEventListener('pointerup', up)
     window.addEventListener('pointercancel', up)
-    // passive: false so the whole page doesn't scroll while you swipe cards
+    // passive: false so the page itself doesn't scroll while swiping cards
     deck?.addEventListener('wheel', wheelHandler, { passive: false })
     return () => {
       window.removeEventListener('pointermove', move)
@@ -232,7 +194,7 @@ export function StoryDeck({ topics, prefs, onOpenPreferences }: Props) {
     }
   }, [])
 
-  // a drag shouldn't count as clicking a link inside the card
+  // A drag shouldn't also count as a click on a link inside the card
   const onClickCapture = (e: React.MouseEvent) => {
     if (didDrag.current) {
       e.preventDefault()
@@ -241,7 +203,7 @@ export function StoryDeck({ topics, prefs, onOpenPreferences }: Props) {
     }
   }
 
-  // Card positions
+  // ---- Card positions ----
   const cardStyle = (i: number): CSSProperties => {
     const rel = i - current
     let transform = 'none'
@@ -255,11 +217,11 @@ export function StoryDeck({ topics, prefs, onOpenPreferences }: Props) {
     } else if (rel === 0 && drag) {
       transform = `translate(${drag.x}px, ${drag.y}px) rotate(${(drag.x / size.w) * 14}deg)`
     } else if (rel > 0) {
-      // cards waiting underneath, the next one grows as you pull the top one away
+      // Waiting underneath; the next card rises as the top one is pulled away
       const pull = drag ? Math.min(1, Math.hypot(drag.x, drag.y) / (Math.min(size.w, size.h) * SWIPE_DISTANCE * 1.5)) : 0
       const depth = Math.max(0, rel - pull)
       transform = `translateY(${depth * 10}px) scale(${1 - depth * 0.045})`
-      // cards further down get darker (not see through, so you can't see the card behind)
+      // Darken cards further down the stack (stays solid, so the card behind never shows through)
       filter = `brightness(${1 - depth * 0.3})`
       opacity = rel > STACK_DEPTH ? 0 : 1
     }
@@ -277,7 +239,6 @@ export function StoryDeck({ topics, prefs, onOpenPreferences }: Props) {
 
   return (
     <div className="deck-wrap">
-      {/* topic tabs, tap a name to go to that card. the line under each name shows where you are */}
       <div className="progress" role="tablist" aria-label="Topics">
         {topics.map((id, i) => (
           <button
@@ -287,10 +248,7 @@ export function StoryDeck({ topics, prefs, onOpenPreferences }: Props) {
             aria-label={TOPICS[id].label}
             className={i < current ? 'seg seen' : i === current ? 'seg current' : 'seg'}
             onClick={() => goTo(i)}
-          >
-            <span className="seg-label">{TOPICS[id].label}</span>
-            <span className="seg-bar" aria-hidden />
-          </button>
+          />
         ))}
       </div>
 
@@ -299,7 +257,7 @@ export function StoryDeck({ topics, prefs, onOpenPreferences }: Props) {
         className={drag ? 'deck dragging' : 'deck'}
         onPointerDown={onPointerDown}
         onClickCapture={onClickCapture}
-        onDragStart={(e) => e.preventDefault()} // stops the browser from dragging links/images
+        onDragStart={(e) => e.preventDefault()} // stop native link/image dragging
       >
         {topics.map((id, i) => {
           const hidden = i !== current

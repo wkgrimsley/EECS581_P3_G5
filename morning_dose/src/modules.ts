@@ -9,7 +9,6 @@ export type ModuleInfo = {
 };
 
 export const MODULES: ModuleInfo[] = [
-  { id: "notes", name: "Notes", description: "Your notes and daily reminders", icon: "📝" },
   { id: "news", name: "News", description: "Top headlines from your sources", icon: "📰" },
   { id: "weather", name: "Weather", description: "Today's forecast", icon: "🌤️" },
   { id: "sports", name: "Sports", description: "Scores from last night", icon: "🏀" },

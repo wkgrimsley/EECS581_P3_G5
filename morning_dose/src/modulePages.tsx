@@ -3,7 +3,6 @@ import WeatherPage from "./pages/WeatherPage";
 import SportsPage from "./pages/SportsPage";
 import StocksPage from "./pages/StocksPage";
 import CalendarPage from "./pages/CalendarPage";
-import NotesPage from "./pages/NotesPage";
 
 // id (from modules.ts) -> the page component that shows it inside its story card.
 // Each page receives its topic's data as a `data` prop (see src/topics/registry.ts).
@@ -13,5 +12,4 @@ export const MODULE_PAGES = {
   sports: SportsPage,
   stocks: StocksPage,
   calendar: CalendarPage,
-  notes: NotesPage,
 };
