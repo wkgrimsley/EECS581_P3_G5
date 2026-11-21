@@ -16,7 +16,7 @@ Create poller to bring in sports results and information for decided preferences
 
 **Story Points:** 5
 
-**Assigned To:** [Name(s)]
+**Assigned To:** John Vitha
 
 **Completion Criteria:**
 - Sports information is pulled in to frontend according to preferences
@@ -30,7 +30,7 @@ Finish creating the website itself to a viewable state that pulls all components
 
 **Story Points:** 3
 
-**Assigned To:** [Name(s)]
+**Assigned To:** Everyone
 
 **Completion Criteria:**
 - Website is viewable and actionable
@@ -44,7 +44,7 @@ Add implementation for user to put notes and daily reminders to be seen at the b
 
 **Story Points:** 2
 
-**Assigned To:** [Name(s)]
+**Assigned To:** Jamareon
 
 **Completion Criteria:**
 - Notes from previous days are viewable in the morning
@@ -102,10 +102,11 @@ Implement a new tab feature that allows the user to select if they want to see t
 
 | Story | Story Points | Assigned To | Status |
 |---|---:|---|---|
-| Story 1 | 5 | [Name(s)] | Not Started |
-| Story 2 | 3 | [Name(s)] | Not Started |
-| Story 3 | 2 | [Name(s)] | Not Started |
-| Story 4 | 8 | [Name(s)] | Not Started |
+| Story 1 | 5 | John Vitha | Completed |
+| Story 2 | 3 | Everyone | In Progress |
+| Story 3 | 2 |Jamareon | Completed |
+| Story 4 | 8 | Bill Grimsley | Complete but not merged |
 | Story 5 | 3 | [Name(s)] | Not Started |
-| Story 6 | 5 | [Riley] | Not Started |
+| Story 6 | 5 | [Riley] | Completed |
 | **Total** | **26** | — | — |
+
