@@ -65,4 +65,6 @@ export const mockWordOfDay = (): WordOfDay => ({
   word: 'ruthless',
   date: '2026-11-20',
   url: 'https://www.merriam-webster.com/word-of-the-day/ruthless-2026-11-20',
+  partOfSpeech: 'adjective',
+  definitions: ['having no pity or compassion'], // placeholder text for testing
 })

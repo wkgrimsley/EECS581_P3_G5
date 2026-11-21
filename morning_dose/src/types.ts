@@ -87,6 +87,9 @@ export type WordOfDay = {
   word: string
   date: string // YYYY-MM-DD
   url: string
+  partOfSpeech?: string
+  pronunciation?: string
+  definitions?: string[]
 }
 
 export interface Preferences {

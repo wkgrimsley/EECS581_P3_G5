@@ -22,9 +22,21 @@ export default function WordOfDayPage({ data }: { data: WordOfDay | null }) {
   return (
     <div className="word">
       <h2 className="word-title">{data.word}</h2>
+      {(data.partOfSpeech || data.pronunciation) && (
+        <p className="muted small">
+          {[data.partOfSpeech, data.pronunciation].filter(Boolean).join(' · ')}
+        </p>
+      )}
+      {data.definitions && data.definitions.length > 0 && (
+        <ol className="word-definitions">
+          {data.definitions.slice(0, 3).map((d, i) => (
+            <li key={i}>{d}</li>
+          ))}
+        </ol>
+      )}
       <p className="muted small">{date}</p>
       <a href={data.url} target="_blank" rel="noreferrer">
-        Read the definition on Merriam-Webster →
+        Read more on Merriam-Webster →
       </a>
     </div>
   )

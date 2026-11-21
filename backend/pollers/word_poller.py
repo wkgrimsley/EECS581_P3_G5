@@ -21,6 +21,7 @@ import json
 import logging
 import re
 import requests
+from urllib.parse import quote
 
 #general site URL and the page that lists the words
 SITE_URL = "https://www.merriam-webster.com"
@@ -29,6 +30,8 @@ CALENDAR_URL = f"{SITE_URL}/word-of-the-day/calendar"
 WORD_LINK_PATTERN = re.compile(r"/word-of-the-day/([a-z0-9-]+?)-(\d{4}-\d{2}-\d{2})")
 #identify ourselves politely to the site
 HEADERS = {"User-Agent": "MorningDose/1.0 (personal project)"}
+DICT_API_URL = "https://api.dictionaryapi.dev/api/v2/entries/en"
+MAX_DEFINITIONS = 3  # How many definitions to keep
 
 def create_retry_session(retries=3, backoff_factor=0.3, status_forcelist=(500, 502, 504)):
     '''
@@ -70,8 +73,35 @@ def pull_word_of_the_day():
         "date": date,
         "url": f"{SITE_URL}{path}",
     }
-
+    word_data.update(lookup_definition(session, word_data["word"]))
     return json.dumps(word_data)  # Return the word as a JSON string
+
+def lookup_definition(session, word):
+    """Look up a word in the Free Dictionary API.
+        Returns part of speech, pronunciation and short definitions, or {} if not found."""
+    try:
+        response = session.get(f"{DICT_API_URL}/{quote(word)}", headers=HEADERS, timeout=10)
+        if response.status_code == 404:  # the API uses 404 for "no definitions found"
+            logging.warning(f"No definition found for '{word}'")
+            return {}
+        response.raise_for_status()
+        entries = response.json()
+    except (requests.exceptions.RequestException, ValueError) as e:
+        logging.error(f"Error looking up '{word}': {e}")
+        return {}
+
+    # use the first meaning that has definitions (usually the most common sense)
+    for entry in entries:
+        for meaning in entry.get("meanings", []):
+            definitions = [d["definition"] for d in meaning.get("definitions", []) if d.get("definition")]
+            if definitions:
+                return {
+                    "partOfSpeech": meaning.get("partOfSpeech"),
+                    "pronunciation": entry.get("phonetic"),
+                    "definitions": definitions[:MAX_DEFINITIONS],
+                }
+
+    return {}
 
 def main():
     """Run the word of the day poller and output the result for the backend"""
