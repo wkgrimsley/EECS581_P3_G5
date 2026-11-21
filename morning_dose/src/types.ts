@@ -9,7 +9,7 @@ Author: Jamareon Davis
 Creation Date: 2026-11-06
 */
 
-export type TopicId = 'notes' | 'weather' | 'news' | 'stocks' | 'sports' | 'calendar'
+export type TopicId = 'notes' | 'weather' | 'news' | 'stocks' | 'sports' | 'calendar' | 'wordofday'
 
 export interface HourlyForecast {
   time: string // ISO timestamp
@@ -81,6 +81,12 @@ export interface Note {
 export interface NotesData {
   reminders: Reminder[]
   notes: Note[]
+}
+
+export type WordOfDay = {
+  word: string
+  date: string // YYYY-MM-DD
+  url: string
 }
 
 export interface Preferences {

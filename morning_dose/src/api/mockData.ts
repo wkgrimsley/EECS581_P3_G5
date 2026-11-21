@@ -5,7 +5,7 @@ Placeholder data used while a topic's poller isn't live yet
 Author: Jamareon Davis
 Creation Date: 2026-11-06
 */
-import type { CalendarEvent, NewsItem, SportsGame, StockQuote, WeatherSnapshot } from '../types'
+import type { CalendarEvent, NewsItem, SportsGame, StockQuote, WeatherSnapshot, WordOfDay } from '../types'
 
 const hoursFromNow = (h: number) => {
   const d = new Date(Date.now() + h * 3_600_000)
@@ -60,3 +60,9 @@ export const mockSports: SportsGame[] = [
   { id: 's2', league: 'NBA', home: 'Thunder', away: 'Nuggets', homeScore: 88, awayScore: 91, status: 'live', startTime: hoursFromNow(-1) },
   { id: 's3', league: 'NCAAB', home: 'Kansas', away: 'Duke', status: 'scheduled', startTime: hoursFromNow(10) },
 ]
+
+export const mockWordOfDay = (): WordOfDay => ({
+  word: 'ruthless',
+  date: '2026-11-20',
+  url: 'https://www.merriam-webster.com/word-of-the-day/ruthless-2026-11-20',
+})

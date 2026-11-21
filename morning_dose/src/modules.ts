@@ -15,6 +15,7 @@ export const MODULES: ModuleInfo[] = [
   { id: "sports", name: "Sports", description: "Scores from last night", icon: "🏀" },
   { id: "stocks", name: "Stocks", description: "How the market is moving", icon: "📈" },
   { id: "calendar", name: "Calendar", description: "What's on your schedule", icon: "📅" },
+  { id: "wordofday", name: "Word of the Day", description: "A new word from Merriam-Webster", icon: "📖" },
 ];
 
 // ---- Saving & loading ----

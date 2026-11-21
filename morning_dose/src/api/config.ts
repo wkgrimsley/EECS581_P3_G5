@@ -22,6 +22,7 @@ export const LIVE_DATA: Record<TopicId, boolean> = {
   sports: false,
   calendar: false,
   notes: false, // saved in the browser for now, see src/api/notes.ts
+  wordofday: false,
 }
 
 // put VITE_USE_MOCKS=true in morning_dose/.env.local to use placeholder data

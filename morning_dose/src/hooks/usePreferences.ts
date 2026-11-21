@@ -16,11 +16,11 @@ import { loadEnabledModules, saveEnabledModules } from '../modules'
 import type { Preferences, TopicId } from '../types'
 
 const STORAGE_KEY = 'morningDose.preferences'
-const TOPIC_IDS: TopicId[] = ['notes', 'weather', 'calendar', 'news', 'stocks', 'sports']
+const TOPIC_IDS: TopicId[] = ['notes', 'weather', 'calendar', 'news', 'stocks', 'sports', 'wordofday',]
 
 export const defaultPreferences: Preferences = {
-  topicOrder: ['notes', 'weather', 'calendar', 'news', 'stocks', 'sports'],
-  enabled: { notes: true, weather: true, calendar: true, news: true, stocks: true, sports: true },
+  topicOrder: ['notes', 'weather', 'calendar', 'news', 'stocks', 'sports', 'wordofday',],
+  enabled: { notes: true, weather: true, calendar: true, news: true, stocks: true, sports: true, wordofday: true, },
   location: 'Lawrence, KS',
   stocks: ['AAPL', 'MSFT', 'NVDA'],
   newsKeywords: ['technology'],

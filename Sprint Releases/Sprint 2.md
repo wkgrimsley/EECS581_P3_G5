@@ -81,6 +81,23 @@ Create mechanism to swipe backwards to go to previous and continue working on UI
 
 ---
 
+---
+
+## Story 6: Add a daily word tab
+
+**Description:**  
+Implement a new tab feature that allows the user to select if they want to see the word of the day. Which is a fun way to increase vocabulary and trying to use it throughout the day
+
+**Story Points:** 5
+
+**Assigned To:** Riley Backus
+
+**Completion Criteria:**
+- Tab is added
+- Puller properly adds and updates the word each day
+
+---
+
 ## Sprint Summary
 
 | Story | Story Points | Assigned To | Status |
@@ -90,4 +107,5 @@ Create mechanism to swipe backwards to go to previous and continue working on UI
 | Story 3 | 2 | [Name(s)] | Not Started |
 | Story 4 | 8 | [Name(s)] | Not Started |
 | Story 5 | 3 | [Name(s)] | Not Started |
-| **Total** | **21** | — | — |
+| Story 6 | 5 | [Riley] | Not Started |
+| **Total** | **26** | — | — |

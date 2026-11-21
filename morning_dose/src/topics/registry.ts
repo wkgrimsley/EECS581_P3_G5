@@ -23,6 +23,7 @@ import { fetchWeather } from '../api/weather'
 import { MODULE_PAGES } from '../modulePages'
 import { MODULES } from '../modules'
 import type { Preferences, TopicId } from '../types'
+import { fetchWordOfDay } from '../api/wordOfDay'
 
 export interface TopicDefinition<T> {
   id: TopicId
@@ -50,4 +51,4 @@ export const TOPICS: Record<TopicId, TopicDefinition<unknown>> = {
   news: defineTopic({ id: 'news', load: fetchNews, deps: (p) => [p.newsKeywords.join(), p.newsSources.join()], View: MODULE_PAGES.news }),
   stocks: defineTopic({ id: 'stocks', load: fetchStocks, deps: (p) => [p.stocks.join()], View: MODULE_PAGES.stocks }),
   sports: defineTopic({ id: 'sports', load: fetchSports, deps: (p) => [p.leagues.join()], View: MODULE_PAGES.sports }),
-}
+  wordofday: defineTopic({ id: 'wordofday', load: fetchWordOfDay, deps: () => [], View: MODULE_PAGES.wordofday }),}
